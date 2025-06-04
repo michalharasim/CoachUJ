@@ -1,16 +1,11 @@
-import React from "react";
 import Footer from "@/components/Footer";
+import { Outlet } from "react-router-dom";
 
-type Props = {
-    children: React.ReactNode;
-}
-
-
-const LayoutCenter = ({ children }: Props) => {
+const LayoutCenter = () => {
     return (
         <div className="flex flex-col min-h-screen">
             <main className="flex flex-grow justify-center items-center">
-                {children}
+                <Outlet />
             </main>
             <Footer/>
         </div>

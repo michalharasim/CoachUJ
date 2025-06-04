@@ -54,7 +54,7 @@ const LoginPage = () : React.ReactElement => {
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
                             </div>
-                            <Button variant="default" type="submit" className="w-full font-semibold cursor-pointer text-secondary">Zaloguj się</Button>
+                            <Button variant="default" type="submit" className="w-full font-semibold cursor-pointer text-foreground">Zaloguj się</Button>
                         </div>
                     </form>
                 </CardContent>

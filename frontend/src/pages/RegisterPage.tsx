@@ -5,6 +5,7 @@ import {useState} from "react";
 import {Button} from "@/components/ui/button.tsx";
 import {Link} from "react-router-dom";
 import React from 'react';
+import {Checkbox} from "@/components/ui/checkbox";
 
 const RegisterPage = () : React.ReactElement => {
     const [password, setPassword] = useState<string>('');
@@ -13,6 +14,7 @@ const RegisterPage = () : React.ReactElement => {
     const [passwordError, setPasswordError] = useState<string | null>(null); // Stan dla błędów hasła
     const [passwordMatchError, setPasswordMatchError] = useState<string | null>(null); // Stan dla błędu zgodności haseł
     const [isPassword2Visible, setIsPassword2Visible] = useState<boolean>(false);
+    const [isCoachAccount, setIsCoachAccount] = useState<boolean>(false);
     const MinPasswordLength = 8;
 
     const validatePasswordLength = () => {
@@ -73,6 +75,18 @@ const RegisterPage = () : React.ReactElement => {
             <CardContent>
                 <form onSubmit={handleSubmit}>
                     <div className="flex flex-col gap-6">
+                        <div className="grid">
+                            <div className="flex flex-row items-center gap-2">
+                                <Checkbox
+                                    className="w-5 h-5"
+                                    id="isCoach"
+                                    checked={isCoachAccount}
+                                    onCheckedChange={(checked) => setIsCoachAccount(checked as boolean)}
+                                />
+                                <Label htmlFor="isCoach">Konto Trenera</Label>
+                            </div>
+                            <span className="text-sm text-muted-foreground">Zaznaczając checkbox rejestrujesz konto jako Trener. Niezaznaczony oznacza konto klienta.</span>
+                        </div>
                         <div className="grid gap-2">
                             <Label htmlFor="email">Email</Label>
                             <Input
@@ -120,7 +134,7 @@ const RegisterPage = () : React.ReactElement => {
                                 )}
                             </div>
                         )}
-                        <Button type="submit" className="w-full font-semibold cursor-pointer text-secondary">Zarejestruj się</Button>
+                        <Button type="submit" className="w-full font-semibold cursor-pointer text-foreground">Zarejestruj się</Button>
                     </div>
                 </form>
             </CardContent>

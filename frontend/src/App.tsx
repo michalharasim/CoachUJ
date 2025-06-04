@@ -12,12 +12,12 @@ function App() {
       <Router>
           <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
               <Routes>
-                  <Route path="/" element={<Layout><MainPage /></Layout>} />
-                  <Route path="/login" element={<LayoutCenter><LoginPage /></LayoutCenter>} />
-                  <Route path="/register" element={<LayoutCenter><RegisterPage /></LayoutCenter>} />
-
-                  {/* Trasa dla nieznanych ścieżek (strona 404) */}
-                  <Route path="*" element={<LayoutCenter><NotFoundPage /></LayoutCenter>} />
+                  <Route element={<LayoutCenter/>}>
+                      <Route path="/" element={<MainPage />} />
+                      <Route path="/login" element={<LoginPage />} />
+                      <Route path="/register" element={<RegisterPage />} />
+                      <Route path="*" element={<NotFoundPage />} />
+                  </Route>
               </Routes>
           </ThemeProvider>
       </Router>
