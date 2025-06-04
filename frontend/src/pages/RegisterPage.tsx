@@ -11,9 +11,11 @@ const RegisterPage = () : React.ReactElement => {
     const [password, setPassword] = useState<string>('');
     const [password2, setPassword2] = useState<string>('');
     const [email, setEmail] = useState<string>('');
-    const [passwordError, setPasswordError] = useState<string | null>(null); // Stan dla błędów hasła
-    const [passwordMatchError, setPasswordMatchError] = useState<string | null>(null); // Stan dla błędu zgodności haseł
+    const [username, setUsername] = useState<string>('');
+    const [passwordError, setPasswordError] = useState<string | null>(null);
+    const [passwordMatchError, setPasswordMatchError] = useState<string | null>(null);
     const [isPassword2Visible, setIsPassword2Visible] = useState<boolean>(false);
+    const [usernameError, setUsernameError] = useState<string | null>(null);
     const [isCoachAccount, setIsCoachAccount] = useState<boolean>(false);
     const MinPasswordLength = 8;
 
@@ -33,32 +35,27 @@ const RegisterPage = () : React.ReactElement => {
         }
     };
 
+    const validateUsername = () => {
+        if (username.length > 2 && username.length <= 50){
+            setUsernameError(null);
+        }else{
+            setUsernameError("Nazwa użytkownika musi mieć od 3 do 50 znaków.")
+        }
+    }
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault(); // Zatrzymuje domyślne przeładowanie strony
+        event.preventDefault();
+
+        if (passwordError || usernameError || passwordMatchError) {
+            return;
+        }
 
         // Resetowanie błędów przed nową walidacją
         setPasswordError(null);
         setPasswordMatchError(null);
-
-        // Walidacja długości hasła
-        if (password.length < 8) {
-            setPasswordError("Hasło musi mieć co najmniej 8 znaków.");
-            return;
-        }
-
-        // Walidacja zgodności haseł
-        if (password !== password2) {
-            setPasswordMatchError("Hasła nie pasują do siebie.");
-            return;
-        }
+        setUsernameError(null);
 
         alert("Rejestracja pomyślna!");
-        console.log('Rejestracja:', { email, password });
-
-        setEmail('');
-        setPassword('');
-        setPassword2('');
-        setIsPassword2Visible(false)
     };
 
     return (
@@ -99,6 +96,24 @@ const RegisterPage = () : React.ReactElement => {
                             />
                         </div>
                         <div className="grid gap-2">
+                            <Label htmlFor="username">Nazwa Użytkownika</Label>
+                            <Input
+                                id="username"
+                                type="text"
+                                placeholder="username"
+                                required
+                                value={username}
+                                onChange={(e) => {
+                                    setUsername(e.target.value);
+                                    validateUsername();
+                                }}
+                                onBlur={validateUsername}
+                            />
+                            {usernameError && (
+                                <p className="text-destructive text-xs mt-1">{usernameError}</p>
+                            )}
+                        </div>
+                        <div className="grid gap-2">
                             <Label htmlFor="password">Hasło</Label>
                             <Input
                                 id="password"
@@ -107,7 +122,7 @@ const RegisterPage = () : React.ReactElement => {
                                 value={password}
                                 onChange={(e) => {
                                     setPassword(e.target.value);
-                                    setIsPassword2Visible(e.target.value.length >= MinPasswordLength)
+                                    setIsPassword2Visible(e.target.value.length >= MinPasswordLength);
                                 }}
                                 onBlur={validatePasswordLength}
                             />

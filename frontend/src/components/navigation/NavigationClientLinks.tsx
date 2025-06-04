@@ -6,9 +6,9 @@ const NavigationClientLinks = () => {
         <>
             <NavLink linkText="Panel" linkUrl="/dashboard" Svg={LayoutDashboard}/>
             <NavLink linkText="Profil" linkUrl="/profile" Svg={UserRound}/>
-            <NavLink linkText="Trenerzy" linkUrl="/profile" Svg={Users}/>
-            <NavLink linkText="Moje Treningi" linkUrl="/profile" Svg={Dumbbell}/>
-            <NavLink linkText="Wiadomości" linkUrl="/profile" Svg={Mail}/>
+            <NavLink linkText="Trenerzy" linkUrl="/coaches" Svg={Users}/>
+            <NavLink linkText="Moje Treningi" linkUrl="/workouts" Svg={Dumbbell}/>
+            <NavLink linkText="Wiadomości" linkUrl="/messages" Svg={Mail}/>
         </>
     )
 }

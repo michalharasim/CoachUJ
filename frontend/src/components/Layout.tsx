@@ -1,21 +1,16 @@
-import React from "react";
 import Footer from "@/components/Footer";
 import SideNav from "@/components/navigation/SideNav";
 import MobileNavBar from "@/components/navigation/MobileNavBar";
+import {Outlet} from "react-router-dom";
 
-type Props = {
-    children: React.ReactNode;
-}
-
-
-const Layout = ({ children }: Props) => {
+const Layout = () => {
     return (
-        <div className="flex flex-col md:flex-row min-h-screen">
+        <div className="flex flex-col md:flex-row h-screen">
             <SideNav/>
             <MobileNavBar/>
             <div className="flex flex-col flex-grow">
-                <main className="flex-grow">
-                    {children}
+                <main className="flex-grow overflow-auto">
+                    <Outlet />
                 </main>
                 <Footer/>
             </div>
