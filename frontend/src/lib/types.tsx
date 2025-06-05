@@ -9,3 +9,14 @@ export type User = {
     phone? : string,
     isCoach: boolean,
 }
+
+export type Profile= {
+    username: string;
+    name: string;
+    surname: string;
+    location: string;
+    phone: string;
+    avatar: string;
+    description: string;
+}
+

@@ -9,7 +9,7 @@ import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from '..
 import { Textarea } from '../ui/textarea';
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {useEffect, useState} from "react";
-import {CircleUserRound} from "lucide-react";
+import {AvatarFallBackImage} from "@/lib/tsx_utils";
 
 type UserProfileFormProps = {
     currentUser: User;
@@ -35,9 +35,7 @@ const UserProfileForm = ({ currentUser, onSubmit, isLoading } : UserProfileFormP
     const profilePictureFromForm = form.watch("profilePicture");
     const [displayImageUrl, setDisplayImageUrl] = useState<string | undefined>(undefined);
 
-    const AvatarFallBackImage = () => {
-        return <CircleUserRound size={90} />;
-    };
+
 
     useEffect(() => {
         if (profilePictureFromForm instanceof File) {

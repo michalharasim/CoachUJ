@@ -6,17 +6,16 @@ import {
     SheetTitle,
     SheetTrigger
 } from "@/components/ui/sheet";
-import {CircleUserRound, SquareMenu} from "lucide-react";
+import {SquareMenu} from "lucide-react";
 import NavigationClientLinks from "@/components/navigation/NavigationClientLinks";
 import {Link} from "react-router-dom";
 import {Avatar, AvatarFallback} from "@/components/ui/avatar";
 import ThemeToggler from "@/components/ThemeToggler";
 import LogoutButton from "@/components/LogoutButton";
+import {AvatarFallBackImage} from "@/lib/tsx_utils";
 
 const MobileNavBar = () => {
-    const fallBack = () => {
-        return <CircleUserRound size={45} />;
-    }
+
 
     return (
         <div className="md:hidden flex flex-row bg-sidebar justify-between items-center p-1">
@@ -27,7 +26,7 @@ const MobileNavBar = () => {
                     <SheetHeader>
                         <SheetTitle className="flex flex-row items-center justify-center gap-5">
                             <Avatar>
-                                <AvatarFallback className="bg-accent">{fallBack()}</AvatarFallback>
+                                <AvatarFallback className="bg-accent">{AvatarFallBackImage(45)}</AvatarFallback>
                             </Avatar>
                             <span className="font-semibold text-xl">Nazwa Użytkownika</span>
                         </SheetTitle>

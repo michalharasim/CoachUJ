@@ -12,7 +12,7 @@ const NavLink = ({linkText, linkUrl, Svg} : Props) => {
         <RouterNavLink
             className={({ isActive }) =>
                 clsx(
-                    "flex flex-row hover:text-primary font-semibold items-center justify-start ps-10 gap-3 text-xl",
+                    "flex flex-row hover:text-primary font-semibold items-center justify-start gap-3 text-xl",
                     {
                         "text-primary font-semibold": isActive
                     }

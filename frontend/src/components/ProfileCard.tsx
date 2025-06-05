@@ -1,0 +1,55 @@
+import {Card, CardContent, CardDescription, CardFooter, CardTitle} from "@/components/ui/card";
+import {type Profile} from "@/lib/types";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {AvatarFallBackImage} from "@/lib/tsx_utils";
+import {Button} from "@/components/ui/button";
+
+type ProfileCardProps = Profile & {
+    onSendInvitation?: (username: string) => void;
+    className?: string;
+    buttonText: string;
+}
+
+const ProfileCard = ({username, name, surname, location, phone, avatar, description, onSendInvitation, className, buttonText} : ProfileCardProps) => {
+
+    const handleSendInvitation = () => {
+        if (onSendInvitation) {
+            onSendInvitation(username);
+        } else {
+
+        }
+    };
+
+    return (
+        <Card className={`w-full shadow-lg shadow-primary ${className || ''}`}>
+            <CardTitle className="flex flex-row items-center justify-center gap-2">
+                <Avatar className="w-[100px] h-[100px]">
+                    <AvatarImage src={avatar}/>
+                    <AvatarFallback className="bg-accent">
+                        {AvatarFallBackImage()}
+                    </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col gap-1">
+                    <CardDescription>@{username}</CardDescription>
+                    <p className="p-0">{name} {surname}</p>
+                    <p className="p-0">{location}</p>
+                </div>
+            </CardTitle>
+            <CardContent className="w-full text-justify">
+                <span>
+                    {description}
+                </span>
+            </CardContent>
+            <CardFooter className="flex flex-col items-center gap-2">
+                <CardDescription className="text-center w-full">
+                    {phone ? `Telefon: ${phone}` : ''}
+                </CardDescription>
+                <Button className="w-full md:w-3/4 cursor-pointer" onClick={handleSendInvitation}>
+                    {buttonText}
+                </Button>
+            </CardFooter>
+        </Card>
+    )
+}
+
+export default ProfileCard;
