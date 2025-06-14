@@ -152,9 +152,69 @@ async function createPlan(req, res, TrainingPlan, PlanExercise, Exercise, sequel
     }
 }
 
+async function updatePlan(req, res, TrainingPlan, PlanExercise, sequelize) {
+    const planID = req.params.id;
+    const exercises = req.body;
+    
+    if (!Array.isArray(exercises) || exercises.length === 0) {
+        return res.status(400).json({
+            success: false,
+            error: 'Request body must be a non-empty array of exercise updates.'
+        });
+    }
+
+    const t = await sequelize.transaction();
+    try {
+        updatedRecords = 0;
+        const plan = await TrainingPlan.findOne({
+            where: {
+                id: planID,
+            }
+        });
+        if (plan === null) {
+            return res.status(404).json({
+                success: false,
+                error: `Plan with id ${planID} doesnt exist`,
+            })
+        }
+
+        for (const e of exercises) {
+            if (e.exerciseID === undefined || e.exerciseID === null) {
+                await t.rollback();
+                return res.status(400).json({
+                    success: false,
+                    error: 'Each update object must contain an "exerciseID" field.'
+                });
+            }
+            const {exerciseID, ...fields} = e;
+            const [rowsAffected, updatedExercises] = await PlanExercise.update(fields, {
+                where: {
+                    planID: planID,
+                    exerciseID: exerciseID,
+                },
+                returning: true,
+                transaction: t,
+            });
+
+            if (rowsAffected !== 0) {
+                updatedRecords += 1;
+            }
+        }
+        await t.commit();
+        return res.status(200).json({
+            success: true,
+            updatedCount: updatedRecords,
+        });
+    } catch (error) {
+        await t.rollback();
+        return serverError(res, "Error during update plan:", error);
+    }
+}
+
 module.exports = {
     addExercise,
     getExercise,
     createPlan,
     getPlan,
+    updatePlan,
 };

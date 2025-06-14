@@ -67,6 +67,10 @@ app.post("/api/trainer/plan", async (req, res) => {
     trainer.createPlan(req, res, TrainingPlan, PlanExercise, Exercise, sequelize);
 });
 
+app.put("/api/trainer/plan/:id", async (req, res) => {
+    trainer.updatePlan(req, res, TrainingPlan, PlanExercise, sequelize);
+});
+
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });
