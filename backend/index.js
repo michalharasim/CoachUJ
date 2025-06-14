@@ -13,10 +13,26 @@ const sequelize = new Sequelize({
 });
 
 const Exercise = require("./models/exercise")(sequelize);
+const TrainingPlan = require("./models/training_plan")(sequelize);
+const PlanExercise = require("./models/plan_exercise")(sequelize);
+
+// TODO: add coachID -> TrainingPlan when coach table is implemented
+PlanExercise.belongsTo(Exercise, {
+    foreignKey: "exerciseID",
+    as: "exercise",
+    allowNull: false,
+});
+Exercise.hasMany(PlanExercise, { foreignKey: "exerciseID" });
+PlanExercise.belongsTo(TrainingPlan, {
+    foreignKey: "planID",
+    as: "plan_exercise",
+    allowNull: false,
+});
+TrainingPlan.hasMany(PlanExercise, { foreignKey: "planID" });
 
 async function syncDatabase() {
     try {
-		await sequelize.sync({ alter: true });
+		await sequelize.sync();
 		console.log('Connection has been established successfully.');
 	} catch (error) {
 		console.error('Error connecting to the database:', error);
@@ -40,6 +56,15 @@ app.get("/api/trainer/exercise/:id", async(req, res) => {
 app.post("/api/trainer/exercise", async (req, res) => {
     // TODO: check if request comes from trainer
     trainer.addExercise(req, res, Exercise);
+});
+
+app.get("/api/trainer/plan/:id", async (req, res) => {
+    // TODO: to samo pytanie co przy exercise
+    trainer.getPlan(req, res, TrainingPlan, PlanExercise);
+});
+
+app.post("/api/trainer/plan", async (req, res) => {
+    trainer.createPlan(req, res, TrainingPlan, PlanExercise, Exercise, sequelize);
 });
 
 app.listen(port, () => {

@@ -1,5 +1,13 @@
 const { Sequelize } = require("sequelize");
 
+function serverError(res, message, error) {
+    console.error(message, error);
+    return res.status(500).json({
+        success: false,
+        error: "server error",
+    });
+}
+
 async function getExercise(req, res, Exercise) {
     const id = req.params.id;
     try {
@@ -24,11 +32,7 @@ async function getExercise(req, res, Exercise) {
             });
         }
     } catch (error) {
-        console.error("Error on get exercise:", error);
-        return res.status(500).json({
-            success: false,
-            error: "server error",
-        });
+        return serverError(res, "Error on get exercise:", error);
     }
 }
 
@@ -63,15 +67,94 @@ async function addExercise(req, res, Exercise) {
             coachID: coachID,
         });
     } catch (error) {
-        console.error("Error during add exercise:", error);
-        return res.status(500).json({
-            success: false,
-            error: "Server error",
+        return serverError(res, "Error during add exercise:", error);
+    }
+}
+
+async function getPlan(req, res, TrainingPlan, PlanExercise) {
+    const planID = req.params.id;
+    try {
+        const trainingPlan = await TrainingPlan.findOne({
+            where: {
+                id: planID,
+            }
         });
+        const planExercises = await PlanExercise.findAll({
+            where: {
+                planID: planID,
+            }
+        });
+        const shortenPlanExercises = planExercises.map(obj => {
+            const {exerciseID, setCount, repCount, breakTime, notes, weight, order} = obj;
+            return {exerciseID, setCount, repCount, breakTime, notes, weight, order};
+        });
+        return res.status(200).json({
+            success: true,
+            name: trainingPlan.name,
+            coachID: trainingPlan.coachID,
+            exercises: shortenPlanExercises,
+        });
+    } catch (error) {
+        return serverError(res, "Error during get plan:", error);
+    }
+}
+
+async function createPlan(req, res, TrainingPlan, PlanExercise, Exercise, sequelize) {
+    const { name, coachID, exercises } = req.body;
+    const t = await sequelize.transaction();
+    try {
+        const trainingPlan = await TrainingPlan.create(
+            {
+                name: name,
+                coachID: coachID,
+            },
+            { transaction: t },
+        );
+        const trainingPlanID = trainingPlan.id;
+        for (e of exercises) {
+            const exercise = await Exercise.findOne({
+                where: {
+                    id: e.exerciseID,
+                }
+            });
+            if (exercise === null) {
+                await t.rollback();
+                return res.status(404).json({
+                    success: false,
+                    error: `Exercise with id ${e.exerciseID} doesnt exist`,
+                })
+            }
+
+            await PlanExercise.create(
+                {
+                    setCount: e.setCount,
+                    repCount: e.repCount,
+                    breakTime: e.breakTime,
+                    notes: e.notes,
+                    weight: e.weight,
+                    order: e.order,
+                    planID: trainingPlanID,
+                    exerciseID: e.exerciseID,
+                },
+                { transaction: t },
+            );
+        }
+        await t.commit();
+        return res.status(201).json({
+            success: true,
+            planID: trainingPlanID,
+            planName: name,
+            exercisesNum: exercises.length,
+        });
+    } catch (error) {
+        await t.rollback();
+        return serverError(res, "Error during create plan:", error);
     }
 }
 
 module.exports = {
     addExercise,
     getExercise,
+    createPlan,
+    getPlan,
 };
