@@ -14,7 +14,7 @@ async function getExercise(req, res, Exercise) {
                 id: exercise.id,
                 name: exercise.name,
                 description: exercise.description,
-                path: exercise.path,
+                picture: exercise.picture,
                 coachID: exercise.coachID,
             });
         } else {
