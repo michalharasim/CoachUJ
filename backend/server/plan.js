@@ -1,8 +1,42 @@
 const { serverError } = require("./helpers");
 
+async function getLogs(req, res, ClientWorkoutLog) {
+    const planID = parseInt(req.params.plan_id);
+    const clientID = parseInt(req.params.client_id);
+    try {
+        const clientWorkoutLogs = await ClientWorkoutLog.findAll({
+            where: {
+                planID: planID,
+                clientID: clientID,
+            },
+        });
+        if (clientWorkoutLogs.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: "Logs for given plan and client are not found.",
+            });
+        }
+
+        console.log(`length = ${clientWorkoutLogs.length}`);
+        const shortenWorkoutLogs = clientWorkoutLogs.map(obj => {
+            const {actualSteps, actualReps, breakTime, notes, actualWeight} = obj;
+            return {actualSteps, actualReps, breakTime, notes, actualWeight};
+        });
+
+        return res.status(200).json({
+            success: true,
+            planID: planID,
+            clientID: clientID,
+            logs: shortenWorkoutLogs,
+        });
+    } catch (error) {
+        return serverError(res, "Error on get logs:", error);
+    }
+}
+
 async function addLogs(req, res, TrainingPlan, User, ClientWorkoutLog) {
-    const planID = req.params.plan_id;
-    const clientID = req.params.client_id;
+    const planID = parseInt(req.params.plan_id);
+    const clientID = parseInt(req.params.client_id);
     const body = req.body;
     try {
         const plan = await TrainingPlan.findOne({
@@ -23,6 +57,8 @@ async function addLogs(req, res, TrainingPlan, User, ClientWorkoutLog) {
         }
 
         await ClientWorkoutLog.create({
+            planID: planID,
+            clientID: clientID,
             actualSteps: body.actualSteps,
             actualReps: body.actualReps,
             breakTime: body.breakTime,
@@ -40,5 +76,6 @@ async function addLogs(req, res, TrainingPlan, User, ClientWorkoutLog) {
 }
 
 module.exports = {
+    getLogs,
     addLogs,
 }

@@ -105,6 +105,10 @@ app.post("/api/trainer/plan/:plan_id/:client_id", async (req, res) => {
     trainer.addPlanToClient(req, res, ClientTrainingPlan, TrainingPlan, User);
 });
 
+app.get("/api/plan/:plan_id/:client_id", async (req, res) => {
+    plan.getLogs(req, res, ClientWorkoutLog);
+});
+
 app.post("/api/plan/:plan_id/:client_id", async (req, res) => {
     plan.addLogs(req, res, TrainingPlan, User, ClientWorkoutLog);
 });
