@@ -211,10 +211,45 @@ async function updatePlan(req, res, TrainingPlan, PlanExercise, sequelize) {
     }
 }
 
+async function addPlanToClient(req, res, ClientTrainingPlan, TrainingPlan, User) {
+    const planID = req.params.plan_id;
+    const clientID = req.params.client_id;
+    try {
+        const plan = await TrainingPlan.findOne({
+            where: {
+                id: planID,
+            },
+        });
+        const client = await User.findOne({
+            where: {
+                id: clientID,
+            },
+        });
+        if (plan === null || client === null) {
+            return res.status(404).json({
+                success: false,
+                error: "Plan or client with given id not found",
+            });
+        }
+        await ClientTrainingPlan.create({
+            planID: planID,
+            clientID: clientID,
+        });
+        return res.status(201).json({
+            success: true,
+            planID: planID,
+            clientID: clientID,
+        });
+    } catch (error) {
+        return serverError(res, "Error during add plan to client:", error);
+    }
+}
+
 module.exports = {
     addExercise,
     getExercise,
     createPlan,
     getPlan,
     updatePlan,
+    addPlanToClient,
 };
