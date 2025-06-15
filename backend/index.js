@@ -6,6 +6,7 @@ const port = 8080;
 const app = express();
 
 const trainer = require("./server/trainer.js");
+const plan = require("./server/plan.js");
 
 const sequelize = new Sequelize({
     dialect: "sqlite",
@@ -17,6 +18,7 @@ const TrainingPlan = require("./models/training_plan")(sequelize);
 const PlanExercise = require("./models/plan_exercise")(sequelize);
 const ClientTrainingPlan = require("./models/client_training_plan")(sequelize);
 const User = require("./models/user")(sequelize);
+const ClientWorkoutLog = require("./models/client_workout_log")(sequelize);
 
 // TODO: add coachID -> TrainingPlan when coach table is implemented
 PlanExercise.belongsTo(Exercise, {
@@ -44,6 +46,19 @@ ClientTrainingPlan.belongsTo(TrainingPlan, {
     allowNull: false,
 });
 TrainingPlan.hasMany(ClientTrainingPlan, { foreignKey: "planID" });
+
+ClientWorkoutLog.belongsTo(User, {
+    foreignKey: "clientID",
+    as: "client",
+    allowNull: false,
+});
+User.hasMany(ClientWorkoutLog, { foreignKey: "clientID" });
+ClientWorkoutLog.belongsTo(TrainingPlan, {
+    foreignKey: "planID",
+    as: "plan",
+    allowNull: false,
+});
+TrainingPlan.hasMany(ClientWorkoutLog, { foreignKey: "planID" });
 
 async function syncDatabase() {
     try {
@@ -88,6 +103,10 @@ app.put("/api/trainer/plan/:id", async (req, res) => {
 
 app.post("/api/trainer/plan/:plan_id/:client_id", async (req, res) => {
     trainer.addPlanToClient(req, res, ClientTrainingPlan, TrainingPlan, User);
+});
+
+app.post("/api/plan/:plan_id/:client_id", async (req, res) => {
+    plan.addLogs(req, res, TrainingPlan, User, ClientWorkoutLog);
 });
 
 app.listen(port, () => {
