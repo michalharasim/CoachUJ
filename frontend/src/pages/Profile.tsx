@@ -15,7 +15,7 @@ const user: User = {
 
 const Profile = () => {
     return (
-        <div className={ "flex flex-col items-center gap-4 p-8"}>
+        <div className={ "flex flex-col items-center gap-4 p-2"}>
             <div className="flex flex-col gap-4 w-full lg:w-[80%]">
             <h2 className="text-xl lg:text-4xl font-bold text-center">Profil Użytkownika {user.isCoach && "(Trener)"}</h2>
             <h4 className="text-l lg:text-xl text-center">Edytuj swój profil</h4>

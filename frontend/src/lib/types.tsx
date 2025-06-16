@@ -20,3 +20,44 @@ export type Profile= {
     description: string;
 }
 
+export type WorkoutPlan = {
+    id: string;
+    name: string;
+    date: string,
+    author: Profile;
+    exercises: WorkoutExercise[];
+}
+
+export type Exercise = {
+    id: string;
+    name: string;
+    description: string;
+    picture: string;
+}
+
+export type WorkoutExercise = {
+    id: string;
+    exercise: Exercise
+    sets: number;
+    reps: number[];
+    weight: number[];
+    notes: string;
+    order: number;
+    breakTime: number;
+}
+
+export type WorkoutExerciseWithLog = {
+    exercise: Exercise
+    actualSets: number;
+    actualReps: number[];
+    actualWeight: number[];
+    logNotes: string;
+    actualBreakTime: number;
+} & WorkoutExercise
+
+export type Message = {
+    sender: string;
+    receiver:string;
+    content: string;
+}
+

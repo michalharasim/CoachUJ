@@ -11,6 +11,7 @@ import Profile from "@/pages/Profile";
 import CoachPage from "@/pages/CoachPage";
 import MessagesPage from "@/pages/MessagesPage";
 import WorkoutPage from "@/pages/WorkoutPage";
+import WorkoutDetailsPage from "@/pages/WorkoutDetailsPage";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
                       <Route path="/coaches" element={<CoachPage />} />
                       <Route path="/workouts" element={<WorkoutPage />} />
                       <Route path="/messages" element={<MessagesPage />} />
+                      <Route path="workouts/:workoutId" element={<WorkoutDetailsPage />} />
                   </Route>
                   <Route element={<LayoutCenter/>}>
                       <Route path="/" element={<MainPage />} />
