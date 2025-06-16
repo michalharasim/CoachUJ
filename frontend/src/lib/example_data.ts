@@ -45,37 +45,37 @@ export const sampleExercises: Exercise[] = [
         id: "ex1",
         name: "Wyciskanie sztangi na ławce płaskiej",
         description: "Klasyczne ćwiczenie na klatkę piersiową, triceps i barki.",
-        picture: "https://example.com/barbell_bench_press.jpg"
+        picture: ""
     },
     {
         id: "ex2",
         name: "Przysiady ze sztangą (przednie)",
         description: "Wielostawowe ćwiczenie na nogi i pośladki, angażuje także core.",
-        picture: "https://example.com/front_squat.jpg"
+        picture: ""
     },
     {
         id: "ex3",
         name: "Martwy ciąg (klasyczny)",
         description: "Kompleksowe ćwiczenie na całe ciało, wzmacnia plecy, nogi i core.",
-        picture: "https://example.com/deadlift.jpg"
+        picture: ""
     },
     {
         id: "ex4",
         name: "Wiosłowanie sztangą w opadzie tułowia",
         description: "Ćwiczenie na plecy i bicepsy, buduje grubość pleców.",
-        picture: "https://example.com/barbell_row.jpg"
+        picture: ""
     },
     {
         id: "ex5",
         name: "Wyciskanie hantli nad głowę siedząc",
         description: "Ćwiczenie izolujące barki, wzmacnia mięśnie naramienne.",
-        picture: "https://example.com/seated_dumbbell_press.jpg"
+        picture: ""
     },
     {
         id: "ex6",
         name: "Uginanie ramion ze sztangą (biceps)",
         description: "Ćwiczenie izolujące bicepsy, buduje masę ramion.",
-        picture: "https://example.com/barbell_curl.jpg"
+        picture: ""
     }
 ];
 
@@ -96,13 +96,7 @@ export const sampleWorkoutPlans: WorkoutPlan[] = [
                 notes: "Zrobiłem jedną serię rozgrzewkową 60kg x 8.",
                 order: 1,
                 breakTime: 120, // sekundy
-                // Tutaj dodajemy logi, aby pokazać wykonane serie
-                actualSets: 3,
-                actualReps: [5, 5, 5],
-                actualWeight: [80, 85, 90],
-                actualBreakTime: 110, // Rzeczywisty czas przerwy
-                logNotes: "Ciężko, ale poszło dobrze. Ostatnia seria z lekkim wsparciem."
-            } as WorkoutExercise & WorkoutLog,
+            } as WorkoutExercise,
             {
                 id: "we1_2",
                 exercise: { // Możesz też definiować inline, jeśli nie chcesz zaciągać z sampleExercises
@@ -116,13 +110,7 @@ export const sampleWorkoutPlans: WorkoutPlan[] = [
                 notes: "",
                 order: 2,
                 breakTime: 90,
-                // Logi dla tego ćwiczenia
-                actualSets: 3,
-                actualReps: [8, 7, 6], // Mniej powtórzeń w ostatniej serii
-                actualWeight: [25, 27.5, 30],
-                actualBreakTime: 95,
-                logNotes: "Ostatnia seria była ciężka, za mało siły."
-            } as WorkoutExercise & WorkoutLog,
+            } as WorkoutExercise,
             {
                 id: "we1_3",
                 exercise: {
@@ -136,13 +124,7 @@ export const sampleWorkoutPlans: WorkoutPlan[] = [
                 notes: "Z obciążeniem",
                 order: 3,
                 breakTime: 60,
-                // Logi
-                actualSets: 3,
-                actualReps: [10, 8, 6],
-                actualWeight: [0, 5, 10],
-                actualBreakTime: 60,
-                logNotes: "Dobra kontrola ruchu."
-            } as WorkoutExercise & WorkoutLog
+            } as WorkoutExercise
         ]
     },
 

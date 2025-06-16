@@ -38,7 +38,6 @@ export type Exercise = {
 export type WorkoutExercise = {
     id: string;
     exercise: Exercise
-    sets: number;
     reps: number[];
     weight: number[];
     notes: string;

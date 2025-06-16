@@ -30,7 +30,7 @@ const WorkoutDetailsPage = () => {
                         <TableHead className="text-left">Nazwa Ćwiczenia</TableHead>
                         <TableHead className="hidden md:table-cell text-left">Opis</TableHead>
                         <TableHead className="hidden md:table-cell text-left">Serie</TableHead>
-                        <TableHead className="text-left flex">Czas Przerwy &nbsp; <span className="hidden md:block">(s)</span></TableHead>
+                        <TableHead className="text-left flex items-center">Czas Przerwy &nbsp; <span className="hidden md:block">(s)</span></TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>

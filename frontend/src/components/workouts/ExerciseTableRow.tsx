@@ -1,6 +1,7 @@
 import {useState} from "react";
 import {TableCell, TableHead, TableHeader, TableRow, Table, TableBody} from "@/components/ui/table";
 import {ChevronDown, ChevronUp} from "lucide-react";
+import ExerciseDetailsModal from "@/components/workouts/ExerciseDetailsModal";
 
 type ExerciseTableRowProps = {
     exerciseName: string;
@@ -33,12 +34,21 @@ const ExerciseTableRow = ({
 
     return (
         <>
-            <TableRow className="cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
-                <TableCell className="text-left text-xs md:text-md font-semibold">{exerciseName}</TableCell>
+            <TableRow className="cursor-pointer">
+                <ExerciseDetailsModal exerciseID={exerciseID}>
+                    <TableCell
+                        className="text-left text-xs md:text-md font-semibold underline"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {exerciseName}
+                    </TableCell>
+                </ExerciseDetailsModal>
+
+
                 <TableCell className="hidden md:table-cell text-left">{notes}</TableCell>
                 <TableCell className="hidden md:table-cell text-left">{reps.length}</TableCell>
                 <TableCell className="text-left">{breakTime}</TableCell>
-                <TableCell>
+                <TableCell onClick={() => setIsOpen(!isOpen)}>
                     {isOpen ? <ChevronUp /> : <ChevronDown />}
                 </TableCell>
             </TableRow>
