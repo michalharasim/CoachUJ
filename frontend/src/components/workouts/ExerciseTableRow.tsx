@@ -6,7 +6,6 @@ import ExerciseDetailsModal from "@/components/workouts/ExerciseDetailsModal";
 type ExerciseTableRowProps = {
     exerciseName: string;
     exerciseID: string;
-    sets: number;
     reps: number[];
     weight: number[];
     notes: string;

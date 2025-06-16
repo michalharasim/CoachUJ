@@ -12,10 +12,6 @@ const WorkoutPage = () => {
         today.setHours(0, 0, 0, 0);
         const [year, month, day] = workout.date.split('-').map(Number);
         const workoutDate = new Date(year, month-1, day);
-
-        console.log(today, workoutDate, today < workoutDate);
-
-
         if (view === 'current') {
             return workoutDate >= today;
         } else {

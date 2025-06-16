@@ -55,8 +55,10 @@ export type WorkoutExerciseWithLog = {
 } & WorkoutExercise
 
 export type Message = {
+    id: string;
     sender: string;
     receiver:string;
     content: string;
+    timestamp: string;
 }
 

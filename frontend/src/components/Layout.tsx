@@ -9,7 +9,7 @@ const Layout = () => {
             <SideNav/>
             <MobileNavBar/>
             <div className="w-full h-full">
-                <main className="md:overflow-auto flex flex-col h-full gap-2">
+                <main className="md:overflow-auto flex flex-col h-full">
                     <div className="flex-grow">
                         <Outlet />
                     </div>
