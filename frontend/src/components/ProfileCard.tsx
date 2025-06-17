@@ -5,16 +5,17 @@ import {AvatarFallBackImage} from "@/lib/tsx_utils";
 import {Button} from "@/components/ui/button";
 
 type ProfileCardProps = Profile & {
-    onSendInvitation?: (username: string) => void;
+    OnClick?: (username: string) => void;
     className?: string;
     buttonText: string;
+    OnSecondOptionClick?: (username: string) => void;
 }
 
-const ProfileCard = ({username, name, surname, location, phone, avatar, description, onSendInvitation, className, buttonText} : ProfileCardProps) => {
+const ProfileCard = ({username, name, surname, location, phone, avatar, description, OnClick, className, buttonText, OnSecondOptionClick} : ProfileCardProps) => {
 
     const handleSendInvitation = () => {
-        if (onSendInvitation) {
-            onSendInvitation(username);
+        if (OnClick) {
+            OnClick(username);
         } else {
 
         }
@@ -47,6 +48,9 @@ const ProfileCard = ({username, name, surname, location, phone, avatar, descript
                 <Button className="w-full cursor-pointer" onClick={handleSendInvitation}>
                     {buttonText}
                 </Button>
+                {OnSecondOptionClick && (
+                    <Button variant="destructive" className="w-full cursor-pointer hover:bg-destructive/70 dark:hover:bg-destructive/50" onClick={() => OnSecondOptionClick(username)}>Anuluj</Button>
+                )}
             </CardFooter>
         </Card>
     )

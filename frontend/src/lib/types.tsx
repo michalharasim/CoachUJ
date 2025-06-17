@@ -28,10 +28,17 @@ export type WorkoutPlan = {
     exercises: WorkoutExercise[];
 }
 
+export type ExerciseCategory = {
+    id: string;
+    name: string;
+}
+
 export type Exercise = {
     id: string;
     name: string;
     description: string;
+    categories: ExerciseCategory[];
+    isMyExercise: boolean;
     picture: string;
 }
 

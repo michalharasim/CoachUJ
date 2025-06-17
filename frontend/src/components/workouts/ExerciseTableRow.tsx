@@ -2,10 +2,10 @@ import {useState} from "react";
 import {TableCell, TableHead, TableHeader, TableRow, Table, TableBody} from "@/components/ui/table";
 import {ChevronDown, ChevronUp} from "lucide-react";
 import ExerciseDetailsModal from "@/components/workouts/ExerciseDetailsModal";
+import type {Exercise} from "@/lib/types";
 
 type ExerciseTableRowProps = {
-    exerciseName: string;
-    exerciseID: string;
+    exercise: Exercise;
     reps: number[];
     weight: number[];
     notes: string;
@@ -17,8 +17,7 @@ type ExerciseTableRowProps = {
 }
 
 const ExerciseTableRow = ({
-    exerciseName,
-    exerciseID,
+    exercise,
     reps,
     weight,
     notes,
@@ -34,12 +33,12 @@ const ExerciseTableRow = ({
     return (
         <>
             <TableRow className="cursor-pointer">
-                <ExerciseDetailsModal exerciseID={exerciseID}>
+                <ExerciseDetailsModal exercise={exercise}>
                     <TableCell
                         className="text-left text-xs md:text-md font-semibold underline"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {exerciseName}
+                        {exercise.name}
                     </TableCell>
                 </ExerciseDetailsModal>
 

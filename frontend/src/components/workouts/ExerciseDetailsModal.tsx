@@ -7,17 +7,15 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import React from "react";
-import {sampleExercises} from "@/lib/example_data";
+import type {Exercise} from "@/lib/types";
+import {Tag} from "lucide-react";
 
 interface ExerciseDetailsModalProps {
-    exerciseID: string;
+    exercise: Exercise;
     children: React.ReactNode;
 }
 
-const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({ exerciseID, children }) => {
-
-    const exercise = sampleExercises.find((ex) => ex.id == exerciseID);
-
+const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({ exercise, children }) => {
 
     return (
         <Dialog>
@@ -31,7 +29,16 @@ const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({ exerciseID,
                         Szczegóły dotyczące ćwiczenia
                     </DialogDescription>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
+                <div className="grid gap-4 py">
+                    <div className="flex flex-row gap-2">
+                        <Tag/>
+                        {exercise.categories.map((category, index) => (
+                            <span className="text-sm font-semibold">
+                                {category.name}
+                                {index < exercise.categories.length - 1 && ", "}
+                            </span>
+                        ))}
+                    </div>
                     <div className="flex justify-center mb-4">
                         <img
                             src={exercise?.picture ? exercise.picture : "https://placehold.co/400x300"}

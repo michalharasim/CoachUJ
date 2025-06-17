@@ -28,7 +28,7 @@ const CoachPage = () => {
                         avatar={userProfile.avatar}
                         description={userProfile.description}
                         buttonText="Wyślij wiadomość"
-                        onSendInvitation={onSendMessage}
+                        OnClick={onSendMessage}
                     />
                 ))}
             </div>
@@ -44,7 +44,7 @@ const CoachPage = () => {
                         phone={userProfile.phone}
                         avatar={userProfile.avatar}
                         description={userProfile.description}
-                        onSendInvitation={onSendInvitation}
+                        OnClick={onSendInvitation}
                         buttonText="Wyślij zaproszenie do współpracy"
                     />
                 ))}

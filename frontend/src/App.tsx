@@ -12,6 +12,10 @@ import CoachPage from "@/pages/CoachPage";
 import MessagesPage from "@/pages/MessagesPage";
 import WorkoutPage from "@/pages/WorkoutPage";
 import WorkoutDetailsPage from "@/pages/WorkoutDetailsPage";
+import ClientsPage from "@/pages/ClientsPage";
+import InvitesPage from "@/pages/InvitesPage";
+import PlansPage from "@/pages/PlansPage";
+import ExercisesPage from "@/pages/ExercisesPage";
 
 function App() {
   return (
@@ -24,7 +28,11 @@ function App() {
                       <Route path="/coaches" element={<CoachPage />} />
                       <Route path="/workouts" element={<WorkoutPage />} />
                       <Route path="/messages" element={<MessagesPage />} />
-                      <Route path="workouts/:workoutId" element={<WorkoutDetailsPage />} />
+                      <Route path="/workouts/:workoutId" element={<WorkoutDetailsPage />} />
+                      <Route path="/clients" element={<ClientsPage />} />
+                      <Route path="/invites" element={<InvitesPage />} />
+                      <Route path="/plans" element={<PlansPage />} />
+                      <Route path="/exercises" element={<ExercisesPage />} />
                   </Route>
                   <Route element={<LayoutCenter/>}>
                       <Route path="/" element={<MainPage />} />

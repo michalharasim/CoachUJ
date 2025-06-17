@@ -1,4 +1,4 @@
-import type {Exercise, Profile, WorkoutExercise, WorkoutPlan} from "@/lib/types";
+import type {Exercise, ExerciseCategory, Profile, WorkoutExercise, WorkoutPlan} from "@/lib/types";
 
 export const allCoaches : Profile[] = [
     {
@@ -40,42 +40,89 @@ export const yourCoaches : Profile[] = [
     }
 ]
 
+export const sampleCategories: ExerciseCategory[] = [
+    {
+        "id": "ramiona",
+        "name": "Ramiona"
+    },
+    {
+        "id": "nogi",
+        "name": "Nogi"
+    },
+    {
+        "id": "klatka-piersiowa",
+        "name": "Klatka Piersiowa"
+    },
+    {
+        "id": "plecy",
+        "name": "Plecy"
+    },
+    {
+        "id": "barki",
+        "name": "Barki"
+    },
+    {
+        "id": "brzuch",
+        "name": "Brzuch"
+    },
+    {
+        "id": "cale-cialo",
+        "name": "Całe Ciało"
+    },
+    {
+        "id": "cardio",
+        "name": "Cardio"
+    }
+]
+
 export const sampleExercises: Exercise[] = [
     {
         id: "ex1",
         name: "Wyciskanie sztangi na ławce płaskiej",
         description: "Klasyczne ćwiczenie na klatkę piersiową, triceps i barki.",
+        categories: [sampleCategories[2]],
+        isMyExercise: true,
         picture: ""
     },
     {
         id: "ex2",
         name: "Przysiady ze sztangą (przednie)",
         description: "Wielostawowe ćwiczenie na nogi i pośladki, angażuje także core.",
-        picture: ""
+        categories: [sampleCategories[1]],
+        picture: "",
+        isMyExercise: false,
     },
     {
         id: "ex3",
         name: "Martwy ciąg (klasyczny)",
         description: "Kompleksowe ćwiczenie na całe ciało, wzmacnia plecy, nogi i core.",
-        picture: ""
+        categories: [sampleCategories[6]],
+        picture: "",
+        isMyExercise: true,
     },
     {
         id: "ex4",
         name: "Wiosłowanie sztangą w opadzie tułowia",
         description: "Ćwiczenie na plecy i bicepsy, buduje grubość pleców.",
-        picture: ""
+        categories: [sampleCategories[3]],
+        picture: "",
+        isMyExercise: false,
     },
     {
         id: "ex5",
         name: "Wyciskanie hantli nad głowę siedząc",
         description: "Ćwiczenie izolujące barki, wzmacnia mięśnie naramienne.",
-        picture: ""
+        categories: [sampleCategories[0], sampleCategories[4]],
+        picture: "",
+        isMyExercise: true,
     },
     {
         id: "ex6",
         name: "Uginanie ramion ze sztangą (biceps)",
         description: "Ćwiczenie izolujące bicepsy, buduje masę ramion.",
-        picture: ""
+        categories: [sampleCategories[0]],
+        picture: "",
+        isMyExercise: false,
     }
 ];
 
@@ -160,7 +207,9 @@ export const sampleWorkoutPlans: WorkoutPlan[] = [
                     id: "ex9",
                     name: "Wykroki z hantlami",
                     description: "Ćwiczenie unilateralne na nogi i pośladki.",
-                    picture: "https://example.com/dumbbell_lunges.jpg"
+                    categories: [sampleCategories[0]],
+                    picture: "https://example.com/dumbbell_lunges.jpg",
+                    isMyExercise: false,
                 },
                 reps: [10, 10], // Na każdą nogę
                 weight: [10, 10],
