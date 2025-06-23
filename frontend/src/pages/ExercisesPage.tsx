@@ -5,7 +5,7 @@ import {Button} from "@/components/ui/button";
 import {useState} from "react";
 import type {Exercise} from "@/lib/types";
 import MyExerciseModal from "@/components/MyExerciseModal";
-import type {ExerciseFormValues} from "@/lib/validation/ExerciseSchema";
+import type {ExerciseFormValues} from "@/lib/schemas/ExerciseSchema";
 
 const ExercisesPage = () => {
 
@@ -15,7 +15,7 @@ const ExercisesPage = () => {
     const [selectedExerciseToEdit, setSelectedExerciseToEdit] = useState<Exercise | undefined>(undefined);
 
     const handleOpenCreateModal = () => {
-        setSelectedExerciseToEdit(undefined); // Upewnij się, że nie ma danych do edycji
+        setSelectedExerciseToEdit(undefined);
         setIsFormModalOpen(true);
     };
 

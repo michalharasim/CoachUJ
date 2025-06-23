@@ -1,4 +1,4 @@
-import type {Exercise, ExerciseCategory, Profile, WorkoutExercise, WorkoutPlan} from "@/lib/types";
+import type {Exercise, ExerciseCategory, Profile, WorkoutPlan} from "@/lib/types";
 
 export const allCoaches : Profile[] = [
     {
@@ -127,51 +127,45 @@ export const sampleExercises: Exercise[] = [
 ];
 
 export const sampleWorkoutPlans: WorkoutPlan[] = [
-    // --- TRENING Z LOGAMI (WYKONANY) ---
-    // Data ustawiona na przeszłość, żeby był "archiwalny"
     {
         id: "wp1_logged",
         name: "Trening Siłowy A - Klatka i Triceps (WYKONANY)",
         date: "2024-06-14", // Data w przeszłości
         author: allCoaches[0], // Tomasz Wojciechowski
+        note: "",
         exercises: [
             {
-                id: "we1_1",
                 exercise: sampleExercises.find(ex => ex.id === "ex1")!, // Wyciskanie sztangi
-                reps: [5, 5, 5],
+                reps: ["5", "5", "5"],
                 weight: [80, 85, 90],
-                notes: "Zrobiłem jedną serię rozgrzewkową 60kg x 8.",
-                order: 1,
                 breakTime: 120, // sekundy
-            } as WorkoutExercise,
+            },
             {
-                id: "we1_2",
-                exercise: { // Możesz też definiować inline, jeśli nie chcesz zaciągać z sampleExercises
+                exercise: {
                     id: "ex7",
                     name: "Wyciskanie hantli skos dodatni",
                     description: "Ćwiczenie na górną część klatki piersiowej.",
-                    picture: "https://example.com/dumbbell_incline.jpg"
+                    picture: "https://example.com/dumbbell_incline.jpg",
+                    categories: [sampleCategories[1]],
+                    isMyExercise: false,
                 },
-                reps: [8, 8, 8],
+                reps: ["8", "8", "8"],
                 weight: [25, 27.5, 30],
-                notes: "",
-                order: 2,
                 breakTime: 90,
-            } as WorkoutExercise,
+            },
             {
-                id: "we1_3",
                 exercise: {
                     id: "ex8",
                     name: "Pompki na poręczach",
                     description: "Ćwiczenie na triceps i dolną część klatki.",
-                    picture: "https://example.com/dips.jpg"
+                    picture: "https://example.com/dips.jpg",
+                    categories: [sampleCategories[1]],
+                    isMyExercise: false,
                 },
-                reps: [10, 8, 6],
-                weight: [0, 5, 10], // Waga dodatkowa
-                notes: "Z obciążeniem",
-                order: 3,
+                reps: ["10", "8", "6"],
+                weight: [0, 5, 10],
                 breakTime: 60,
-            } as WorkoutExercise
+            }
         ]
     },
 
@@ -182,27 +176,21 @@ export const sampleWorkoutPlans: WorkoutPlan[] = [
         name: "Trening Siłowy B - Nogi i Barki (DO ZROBIENIA)",
         date: "2025-09-17", // Data w przyszłości
         author: allCoaches[1], // Anna Kowalczyk
+        note: "",
         exercises: [
             {
-                id: "we2_1",
                 exercise: sampleExercises.find(ex => ex.id === "ex2")!, // Przysiady przednie
-                reps: [6, 6, 6],
+                reps: ["6", "6"," 6"],
                 weight: [60, 65, 70],
-                notes: "Skupić się na głębi.",
-                order: 1,
                 breakTime: 180
             },
             {
-                id: "we2_2",
                 exercise: sampleExercises.find(ex => ex.id === "ex5")!, // Wyciskanie hantli nad głowę
-                reps: [10, 10, 10],
+                reps: ["10", "10", "10"],
                 weight: [15, 17.5, 20],
-                notes: "Pełny zakres ruchu.",
-                order: 2,
                 breakTime: 90
             },
             {
-                id: "we2_3",
                 exercise: {
                     id: "ex9",
                     name: "Wykroki z hantlami",
@@ -211,10 +199,8 @@ export const sampleWorkoutPlans: WorkoutPlan[] = [
                     picture: "https://example.com/dumbbell_lunges.jpg",
                     isMyExercise: false,
                 },
-                reps: [10, 10], // Na każdą nogę
+                reps: ["10", "10"], // Na każdą nogę
                 weight: [10, 10],
-                notes: "Po 10 na nogę.",
-                order: 3,
                 breakTime: 60
             }
         ]
@@ -227,32 +213,24 @@ export const sampleWorkoutPlans: WorkoutPlan[] = [
         name: "Trening Siłowy C - Plecy i Biceps (DO ZROBIENIA)",
         date: "2025-09-19", // Data w przyszłości
         author: allCoaches[2], // Michał Nowak
+        note: "",
         exercises: [
             {
-                id: "we3_1",
                 exercise: sampleExercises.find(ex => ex.id === "ex3")!, // Martwy ciąg
-                reps: [5, 5, 5],
+                reps: ["5", "5", "5"],
                 weight: [100, 110, 120],
-                notes: "Poprawna technika przede wszystkim!",
-                order: 1,
                 breakTime: 240
             },
             {
-                id: "we3_2",
                 exercise: sampleExercises.find(ex => ex.id === "ex4")!, // Wiosłowanie sztangą
-                reps: [8, 8, 8],
+                reps: ["8", "8", "8"],
                 weight: [60, 65, 70],
-                notes: "Mocne ściągnięcie łopatek.",
-                order: 2,
                 breakTime: 120
             },
             {
-                id: "we3_3",
                 exercise: sampleExercises.find(ex => ex.id === "ex6")!, // Uginanie ramion ze sztangą
-                reps: [10, 10, 10],
+                reps: ["10", "10", "10"],
                 weight: [25, 27.5, 30],
-                notes: "Kontrolowany ruch.",
-                order: 3,
                 breakTime: 60
             }
         ]

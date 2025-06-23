@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import type {Exercise} from "@/lib/types";
-import type {ExerciseFormValues} from "@/lib/validation/ExerciseSchema";
+import type {ExerciseFormValues} from "@/lib/schemas/ExerciseSchema";
 import ExerciseForm from "@/components/forms/ExerciseForm";
 import React from "react";
 

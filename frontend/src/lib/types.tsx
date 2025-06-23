@@ -26,6 +26,7 @@ export type WorkoutPlan = {
     date: string,
     author: Profile;
     exercises: WorkoutExercise[];
+    note: string;
 }
 
 export type ExerciseCategory = {
@@ -43,12 +44,9 @@ export type Exercise = {
 }
 
 export type WorkoutExercise = {
-    id: string;
     exercise: Exercise
-    reps: number[];
+    reps: string[];
     weight: number[];
-    notes: string;
-    order: number;
     breakTime: number;
 }
 

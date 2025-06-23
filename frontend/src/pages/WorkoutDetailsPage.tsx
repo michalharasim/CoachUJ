@@ -37,7 +37,7 @@ const WorkoutDetailsPage = () => {
                     {workout.exercises.map(workoutExercise => (
                         <ExerciseTableRow
                             key={workoutExercise.exercise.name + workoutExercise.reps + workoutExercise.weight + workoutExercise.exercise.id + workoutExercise.breakTime}
-                            exerciseName={workoutExercise.exercise.name}
+                            exercise={workoutExercise.exercise}
                             exerciseID={workoutExercise.exercise.id}
                             reps={workoutExercise.reps}
                             weight={workoutExercise.weight}

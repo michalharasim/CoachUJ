@@ -1,4 +1,4 @@
-import {type ExerciseFormValues, exerciseSchema} from "@/lib/validation/ExerciseSchema";
+import {type ExerciseFormValues, exerciseSchema} from "@/lib/schemas/ExerciseSchema";
 import { useForm } from 'react-hook-form';
 import {useEffect, useState} from "react";
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -61,6 +61,7 @@ const ExerciseForm = ({exercise, onSubmit} : ExerciseFormProps) => {
 
     return (
         <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="flex justify-center ">
                 <img
                     src={displayImageUrl ? displayImageUrl : "https://placehold.co/400x300"}
@@ -93,7 +94,6 @@ const ExerciseForm = ({exercise, onSubmit} : ExerciseFormProps) => {
                     </FormItem>
                 )}
             />
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
                     control={form.control}
                     name="name"

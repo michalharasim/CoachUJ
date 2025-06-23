@@ -26,7 +26,7 @@ export const exerciseSchema = z.object({
     categories: z.array(exerciseCategorySchema)
         .min(1, "Wybierz co najmniej jedną kategorię dla ćwiczenia."),
 
-    picture: exerciseFileSchema,
+    picture: z.union([exerciseFileSchema, z.string()]),
 });
 
 export type ExerciseFormValues = z.infer<typeof exerciseSchema>;
