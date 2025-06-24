@@ -1,4 +1,4 @@
-import type {Exercise, ExerciseCategory, Profile, WorkoutPlan} from "@/lib/types";
+import type {Exercise, ExerciseCategory, Profile, WorkoutLog, WorkoutPlan} from "@/lib/types";
 
 export const allCoaches : Profile[] = [
     {
@@ -132,7 +132,7 @@ export const sampleWorkoutPlans: WorkoutPlan[] = [
         name: "Trening Siłowy A - Klatka i Triceps (WYKONANY)",
         date: "2024-06-14", // Data w przeszłości
         author: allCoaches[0], // Tomasz Wojciechowski
-        note: "",
+        note: "Rób to powoli",
         exercises: [
             {
                 exercise: sampleExercises.find(ex => ex.id === "ex1")!, // Wyciskanie sztangi
@@ -236,3 +236,29 @@ export const sampleWorkoutPlans: WorkoutPlan[] = [
         ]
     }
 ];
+
+export const sampleWorkoutLogs : WorkoutLog[] = [
+    {
+        plan: sampleWorkoutPlans[0],
+        log_exercises: [
+            {
+                actualReps: ["5", "4", "2"],
+                actualWeight: [80, 75, 75],
+                actualBreakTime: [160, 160, 160],
+            },
+            {
+                actualReps: ["5", "4", "3"],
+                actualWeight: [80, 75, 75],
+                actualBreakTime: [180, 160, 160],
+            },
+            {
+                actualReps: ["5", "5", "4"],
+                actualWeight: [75, 75, 75],
+                actualBreakTime: [100, 200, 300],
+            }
+
+        ],
+        log_note: "było ciężko, ale dałem rade"
+    }
+
+]

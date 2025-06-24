@@ -1,11 +1,13 @@
 import {type WorkoutPlan} from "@/lib/types";
+import {Button} from "@/components/ui/button";
 
 type PlanCardProps = {
     workout: WorkoutPlan;
     onClick: (x: any) => void;
+    onButtonClick: () => void;
 }
 
-const PlanCard = ({ workout, onClick }: PlanCardProps) => {
+const PlanCard = ({ workout, onClick, onButtonClick}: PlanCardProps) => {
     return (
         <div
             onClick={onClick}
@@ -16,6 +18,12 @@ const PlanCard = ({ workout, onClick }: PlanCardProps) => {
                 <p className="text-card-foreground text-sm">
                     {new Date(workout.date).toLocaleDateString('pl-PL')}
                 </p>
+                <Button className="cursor-pointer w-full" onClick={(e) => {
+                    e.stopPropagation();
+                    onButtonClick();
+                }}>
+                    Wyślij Plan
+                </Button>
             </div>
         </div>
     );

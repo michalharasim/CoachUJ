@@ -1,5 +1,6 @@
 import {yourCoaches} from "@/lib/example_data";
 import ProfileCard from "@/components/ProfileCard";
+import {Button} from "@/components/ui/button";
 
 const InvitesPage = () => {
 
@@ -27,7 +28,13 @@ const InvitesPage = () => {
                         description={userProfile.description}
                         buttonText="Zaakceptuj"
                         OnClick={onAccept}
-                        OnSecondOptionClick={onDecline}
+                        SecondButton={
+                        <Button
+                            variant="destructive"
+                            className="w-full cursor-pointer hover:bg-destructive/70 dark:hover:bg-destructive/50" onClick={() => onDecline(userProfile.username)}>
+                            Anuluj
+                        </Button>
+                    }
                     />
                 ))}
             </div>

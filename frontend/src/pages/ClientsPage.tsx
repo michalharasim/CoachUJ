@@ -1,11 +1,9 @@
 import {yourCoaches} from "@/lib/example_data";
 import ProfileCard from "@/components/ProfileCard";
+import {Button} from "@/components/ui/button";
+import {Link} from "react-router-dom";
 
 const ClientsPage = () => {
-
-    const onSendMessage = (username: string) => {
-        alert(`Wiadomość dla ${username} zostało wysłane!`);
-    }
 
     return (
         <div className="w-full h-full mb-5">
@@ -21,8 +19,18 @@ const ClientsPage = () => {
                         phone={userProfile.phone}
                         avatar={userProfile.avatar}
                         description={userProfile.description}
-                        buttonText="Wyślij wiadomość"
-                        OnClick={onSendMessage}
+                        buttonText=""
+                        OnClick={null}
+                        SecondButton={
+                            <Button
+                                variant="link"
+                                className="w-full cursor-pointer "
+                            >
+                                <Link to={`/clients/logs/${userProfile.username}`}> {/* Navigate to history URL */}
+                                    Sprawdź historię treningów
+                                </Link>
+                            </Button>
+                        }
                     />
                 ))}
             </div>

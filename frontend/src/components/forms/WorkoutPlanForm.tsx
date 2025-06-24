@@ -16,7 +16,7 @@ type WorkoutPlanFormProps = {
 };
 
 const WorkoutPlanForm = ({currentPlan, onSubmit}: WorkoutPlanFormProps) => {
-    const form = useForm<WorkoutPlanFormInput>({
+    const form = useForm<WorkoutPlanFormInput, any, WorkoutPlanFormValues>({
         resolver: zodResolver(workoutPlanSchema),
         defaultValues: {
             name: currentPlan?.name || "",
@@ -110,7 +110,7 @@ const WorkoutPlanForm = ({currentPlan, onSubmit}: WorkoutPlanFormProps) => {
                         {fields.map((field, index) => (
                             <div key={field.id} className="border p-3 rounded-md flex flex-col gap-3">
                                 <div className="flex justify-between items-center">
-                                    <h4 className="font-medium text-blue-700">{field.exercise.name}</h4>
+                                    <h4 className="font-medium text-primary">{field.exercise.name}</h4>
                                     <Button
                                         type="button"
                                         variant="destructive"

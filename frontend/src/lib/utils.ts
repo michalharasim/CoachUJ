@@ -13,3 +13,12 @@ export function getName(user: Profile): string{
     return user.username;
   }
 }
+
+export function formatSecondsToMinutesAndSeconds(totalSeconds: number): string {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  const formattedSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
+
+  return `${minutes}:${formattedSeconds}`;
+}

@@ -26,10 +26,12 @@ function App() {
                       <Route path="/dashboard" element={<Dashboard />} />
                       <Route path="/profile" element={<Profile />} />
                       <Route path="/coaches" element={<CoachPage />} />
-                      <Route path="/workouts" element={<WorkoutPage />} />
+                      <Route path="/workouts" element={<WorkoutPage coach={false} />} />
                       <Route path="/messages" element={<MessagesPage />} />
-                      <Route path="/workouts/:workoutId" element={<WorkoutDetailsPage />} />
+                      <Route path="/workouts/:workoutId" element={<WorkoutDetailsPage isCoachView={false} />} />
                       <Route path="/clients" element={<ClientsPage />} />
+                      <Route path="/clients/logs/:username" element={<WorkoutPage coach={true} />} />
+                      <Route path="/clients/logs/plan/:workoutId" element={<WorkoutDetailsPage isCoachView={true} />} />
                       <Route path="/invites" element={<InvitesPage />} />
                       <Route path="/plans" element={<PlansPage />} />
                       <Route path="/exercises" element={<ExercisesPage />} />

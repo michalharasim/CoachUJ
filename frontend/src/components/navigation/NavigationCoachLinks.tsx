@@ -1,10 +1,9 @@
 import NavLink from "@/components/navigation/NavLink";
-import {Dumbbell, LayoutDashboard, Mail, Mailbox, Notebook, UserRound, Users} from "lucide-react";
+import {Dumbbell, Mail, Mailbox, Notebook, UserRound, Users} from "lucide-react";
 
 const NavigationCoachLinks = () => {
     return (
         <>
-            <NavLink linkText="Panel" linkUrl="/dashboard" Svg={LayoutDashboard}/>
             <NavLink linkText="Profil" linkUrl="/profile" Svg={UserRound}/>
             <NavLink linkText="Podopieczni" linkUrl="/clients" Svg={Users}/>
             <NavLink linkText="Ćwiczenia" linkUrl="/exercises" Svg={Dumbbell}/>

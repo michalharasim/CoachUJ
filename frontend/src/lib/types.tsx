@@ -50,14 +50,17 @@ export type WorkoutExercise = {
     breakTime: number;
 }
 
+export type WorkoutLog = {
+    plan: WorkoutPlan;
+    log_exercises: WorkoutExerciseWithLog[];
+    log_note: string;
+}
+
 export type WorkoutExerciseWithLog = {
-    exercise: Exercise
-    actualSets: number;
-    actualReps: number[];
+    actualReps: string[];
     actualWeight: number[];
-    logNotes: string;
-    actualBreakTime: number;
-} & WorkoutExercise
+    actualBreakTime: number[];
+}
 
 export type Message = {
     id: string;

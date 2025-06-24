@@ -3,15 +3,16 @@ import {type Profile} from "@/lib/types";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {AvatarFallBackImage} from "@/lib/tsx_utils";
 import {Button} from "@/components/ui/button";
+import React from "react";
 
 type ProfileCardProps = Profile & {
-    OnClick?: (username: string) => void;
+    OnClick?: ((username: string) => void) | null;
     className?: string;
     buttonText: string;
-    OnSecondOptionClick?: (username: string) => void;
+    SecondButton?: React.ReactNode;
 }
 
-const ProfileCard = ({username, name, surname, location, phone, avatar, description, OnClick, className, buttonText, OnSecondOptionClick} : ProfileCardProps) => {
+const ProfileCard = ({username, name, surname, location, phone, avatar, description, OnClick, className, buttonText, SecondButton} : ProfileCardProps) => {
 
     const handleSendInvitation = () => {
         if (OnClick) {
@@ -45,11 +46,13 @@ const ProfileCard = ({username, name, surname, location, phone, avatar, descript
                 <CardDescription className="text-center w-full">
                     {phone ? `Telefon: ${phone}` : ''}
                 </CardDescription>
-                <Button className="w-full cursor-pointer" onClick={handleSendInvitation}>
-                    {buttonText}
-                </Button>
-                {OnSecondOptionClick && (
-                    <Button variant="destructive" className="w-full cursor-pointer hover:bg-destructive/70 dark:hover:bg-destructive/50" onClick={() => OnSecondOptionClick(username)}>Anuluj</Button>
+                {buttonText != "" && (
+                    <Button className="w-full cursor-pointer" onClick={handleSendInvitation}>
+                        {buttonText}
+                    </Button>
+                )}
+                {SecondButton && (
+                    SecondButton
                 )}
             </CardFooter>
         </Card>

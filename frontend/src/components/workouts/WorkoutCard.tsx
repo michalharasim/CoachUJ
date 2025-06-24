@@ -6,11 +6,12 @@ import {Link} from "react-router-dom";
 
 type WorkoutCardProps = {
     workout: WorkoutPlan;
+    workoutBaseUrl: string;
 }
 
-const WorkoutCard = ({ workout }: WorkoutCardProps) => {
+const WorkoutCard = ({workoutBaseUrl, workout }: WorkoutCardProps) => {
     return (
-        <Link to={`/workouts/${workout.id}`}>
+        <Link to={`${workoutBaseUrl}/${workout.id}`}>
             <div className="bg-card rounded-lg shadow-sm shadow-primary p-4 cursor-pointer hover:shadow-lg transition-shadow duration-300 flex flex-col gap-2">
                 <div className="flex flex-col h-full gap-2 items-center justify-between">
                     <h3 className="font-semibold text-sm lg:text-md text-center">{workout.name}</h3>
