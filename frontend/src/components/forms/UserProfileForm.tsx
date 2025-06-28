@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-import { userProfileSchema, type UserProfileFormValues } from '@/lib/validation/UserSchema';
+import { userProfileSchema, type UserProfileFormValues } from '@/lib/schemas/UserSchema';
 import type { User } from '@/lib/types';
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from '../ui/form';
 import { Textarea } from '../ui/textarea';
@@ -35,8 +35,6 @@ const UserProfileForm = ({ currentUser, onSubmit, isLoading } : UserProfileFormP
     const profilePictureFromForm = form.watch("profilePicture");
     const [displayImageUrl, setDisplayImageUrl] = useState<string | undefined>(undefined);
 
-
-
     useEffect(() => {
         if (profilePictureFromForm instanceof File) {
             const url = URL.createObjectURL(profilePictureFromForm);
@@ -67,7 +65,7 @@ const UserProfileForm = ({ currentUser, onSubmit, isLoading } : UserProfileFormP
                     <FormField
                         control={form.control}
                         name="profilePicture"
-                        render={({ field: { onChange, value, ...fieldProps } }) => ( // Dodano 'value' do destrukturyzacji
+                        render={({ field: { onChange, value, ...fieldProps } }) => (
                             <FormItem>
                                 <FormLabel>Zmień Avatar</FormLabel>
                                 <FormControl>
@@ -75,7 +73,7 @@ const UserProfileForm = ({ currentUser, onSubmit, isLoading } : UserProfileFormP
                                         name={fieldProps.name}
                                         onBlur={fieldProps.onBlur}
                                         ref={fieldProps.ref}
-
+                                        className="cursor-pointer"
                                         type="file"
                                         accept="image/jpeg,image/png,image/webp"
                                         onChange={(e) => {

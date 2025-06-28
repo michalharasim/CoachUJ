@@ -4,6 +4,7 @@ import ThemeToggler from "@/components/ThemeToggler";
 import NavigationClientLinks from "@/components/navigation/NavigationClientLinks";
 import LogoutButton from "@/components/LogoutButton";
 import {AvatarFallBackImage} from "@/lib/tsx_utils";
+import NavigationCoachLinks from "@/components/navigation/NavigationCoachLinks";
 
 const SideNav = () => {
 
@@ -19,7 +20,8 @@ const SideNav = () => {
                 </div>
                 <Separator className="my-5"/>
                 <nav className="flex flex-col items-start ps-5 gap-5">
-                    <NavigationClientLinks/>
+                    {/*<NavigationClientLinks/>*/}
+                    <NavigationCoachLinks/>
                 </nav>
             </div>
             <div className="flex flex-col items-center mb-4 gap-4">

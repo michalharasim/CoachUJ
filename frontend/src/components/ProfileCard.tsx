@@ -3,27 +3,29 @@ import {type Profile} from "@/lib/types";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {AvatarFallBackImage} from "@/lib/tsx_utils";
 import {Button} from "@/components/ui/button";
+import React from "react";
 
 type ProfileCardProps = Profile & {
-    onSendInvitation?: (username: string) => void;
+    OnClick?: ((username: string) => void) | null;
     className?: string;
     buttonText: string;
+    SecondButton?: React.ReactNode;
 }
 
-const ProfileCard = ({username, name, surname, location, phone, avatar, description, onSendInvitation, className, buttonText} : ProfileCardProps) => {
+const ProfileCard = ({username, name, surname, location, phone, avatar, description, OnClick, className, buttonText, SecondButton} : ProfileCardProps) => {
 
     const handleSendInvitation = () => {
-        if (onSendInvitation) {
-            onSendInvitation(username);
+        if (OnClick) {
+            OnClick(username);
         } else {
 
         }
     };
 
     return (
-        <Card className={`w-full shadow-lg shadow-primary ${className || ''}`}>
+        <Card className={`w-full shadow-md shadow-primary gap-1 py-2 ${className || ''}`}>
             <CardTitle className="flex flex-row items-center justify-center gap-2">
-                <Avatar className="w-[100px] h-[100px]">
+                <Avatar className="w-[80px] h-[80px]">
                     <AvatarImage src={avatar}/>
                     <AvatarFallback className="bg-accent">
                         {AvatarFallBackImage()}
@@ -35,8 +37,8 @@ const ProfileCard = ({username, name, surname, location, phone, avatar, descript
                     <p className="p-0">{location}</p>
                 </div>
             </CardTitle>
-            <CardContent className="w-full text-justify">
-                <span>
+            <CardContent className="w-full text-justify p-4 py-0">
+                <span className="text-sm">
                     {description}
                 </span>
             </CardContent>
@@ -44,9 +46,14 @@ const ProfileCard = ({username, name, surname, location, phone, avatar, descript
                 <CardDescription className="text-center w-full">
                     {phone ? `Telefon: ${phone}` : ''}
                 </CardDescription>
-                <Button className="w-full md:w-3/4 cursor-pointer" onClick={handleSendInvitation}>
-                    {buttonText}
-                </Button>
+                {buttonText != "" && (
+                    <Button className="w-full cursor-pointer" onClick={handleSendInvitation}>
+                        {buttonText}
+                    </Button>
+                )}
+                {SecondButton && (
+                    SecondButton
+                )}
             </CardFooter>
         </Card>
     )
