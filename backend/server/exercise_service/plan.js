@@ -1,4 +1,4 @@
-const { serverError } = require("./helpers");
+const { serverError } = require("../helpers");
 
 async function getLogs(req, res, ClientWorkoutLog) {
     const planID = parseInt(req.params.plan_id);
@@ -75,7 +75,46 @@ async function addLogs(req, res, TrainingPlan, User, ClientWorkoutLog) {
     }
 }
 
+async function getPlan(req, res, ClientTrainingPlan, TrainingPlan) {
+    const clientID = parseInt(req.params.client_id);
+    try {
+        const clientPlan = await ClientTrainingPlan.findOne({
+            where: {
+                clientID: clientID,
+            },
+        });
+
+        if (clientPlan === null) {
+            return res.status(404).json({
+                success: false,
+                error: "Client with given id doesnt exist",
+            });
+        }
+        const planID = clientPlan.planID;
+        const plan = await TrainingPlan.findOne({
+            where: {
+                id: planID,
+            },
+        });
+
+        if (plan === null) {
+            return res.status(404).json({
+                success: false,
+                error: "Plan with given id doesnt exist",
+            });
+        }
+        return res.status(200).json({
+            succes: true,
+            planName: plan.name,
+            coachId: plan.coachID,
+        });
+    } catch (error) {
+        return serverError(res, "Error on get plan:", error);
+    }
+}
+
 module.exports = {
     getLogs,
     addLogs,
+    getPlan,
 }

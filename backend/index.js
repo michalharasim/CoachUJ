@@ -5,8 +5,8 @@ const port = 8080;
 
 const app = express();
 
-const trainer = require("./server/trainer.js");
-const plan = require("./server/plan.js");
+const trainer = require("./server/exercise_service/trainer.js");
+const plan = require("./server/exercise_service/plan.js");
 
 const sequelize = new Sequelize({
     dialect: "sqlite",
@@ -111,6 +111,12 @@ app.get("/api/plan/:plan_id/:client_id", async (req, res) => {
 
 app.post("/api/plan/:plan_id/:client_id", async (req, res) => {
     plan.addLogs(req, res, TrainingPlan, User, ClientWorkoutLog);
+});
+
+app.get("/api/plan/:client_id", async (req, res) => {
+    // W specyfikacji jest GET /api/plan
+    // TODO: zmienić to na to co w specyfikacji jak będzie autentykacja i czytać z cookies!
+    plan.getPlan(req, res, ClientTrainingPlan, TrainingPlan);
 });
 
 app.listen(port, () => {

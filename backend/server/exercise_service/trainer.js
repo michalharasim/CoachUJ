@@ -1,5 +1,5 @@
 const { Sequelize } = require("sequelize");
-const { serverError } = require("./helpers");
+const { serverError } = require("../helpers");
 
 async function getExercise(req, res, Exercise) {
     const id = req.params.id;
