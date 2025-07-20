@@ -6,6 +6,7 @@ import {Button} from "@/components/ui/button.tsx";
 import {Link} from "react-router-dom";
 import React from 'react';
 import {Checkbox} from "@/components/ui/checkbox";
+import {useNavigate} from "react-router-dom";
 
 const RegisterPage = () : React.ReactElement => {
     const [password, setPassword] = useState<string>('');
@@ -18,6 +19,7 @@ const RegisterPage = () : React.ReactElement => {
     const [usernameError, setUsernameError] = useState<string | null>(null);
     const [isCoachAccount, setIsCoachAccount] = useState<boolean>(false);
     const MinPasswordLength = 8;
+    const navigate = useNavigate();
 
     const validatePasswordLength = () => {
         if (password.length > 0 && password.length < MinPasswordLength) {
@@ -43,19 +45,53 @@ const RegisterPage = () : React.ReactElement => {
         }
     }
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
         event.preventDefault();
+
+        validatePasswordLength();
+        validatePasswordMatch();
+        validateUsername();
 
         if (passwordError || usernameError || passwordMatchError) {
             return;
         }
 
-        // Resetowanie błędów przed nową walidacją
+        const data = {
+            email,
+            username,
+            password,
+            isCoach: isCoachAccount
+        };
+
+        try {
+            const response = await fetch('http://localhost:2000/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.log(errorData);
+                alert(errorData.error || 'Wystąpił błąd rejestracji');
+                return;
+            }
+
+
+        } catch (error) {
+            console.error('Błąd sieci:', error);
+            alert("Nie można połączyć się z serwerem.");
+        }
+
+        alert("Rejestracja pomyślna!");
+        setIsCoachAccount(false);
         setPasswordError(null);
         setPasswordMatchError(null);
         setUsernameError(null);
-
-        alert("Rejestracja pomyślna!");
+        navigate('/login');
     };
 
     return (

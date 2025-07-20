@@ -11,12 +11,42 @@ const LoginPage = () : React.ReactElement => {
     const [email, setEmail] = useState<string>('');
     const [isError, setIsError] = useState<boolean>(false);
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (password.length < 8) {
             setIsError(true);
             return;
         }
+
+        const data = {
+            email,
+            password,
+        };
+
+        try {
+            const response = await fetch('http://localhost:2000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.log(errorData);
+                alert(errorData.error || 'Wystąpił błąd logowania');
+                return;
+            }
+
+
+        } catch (error) {
+            console.error('Błąd sieci:', error);
+            alert("Nie można połączyć się z serwerem.");
+        }
+
+
         setIsError(false);
         setPassword('');
         setEmail('');
