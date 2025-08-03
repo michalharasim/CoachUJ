@@ -19,6 +19,7 @@ import ExercisesPage from "@/pages/ExercisesPage";
 import {AuthProvider} from "@/contexts/auth-context";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
+
 function App() {
   return (
       <Router>
@@ -27,8 +28,9 @@ function App() {
                   <Routes>
                       {/* ---------------------------------------------------- */}
                       {/* TRASY PUBLICZNE */}
+                      {/* Jeżeli valid token i ściezka w wymienionej tablicy -> przekierowanie do /profile */}
                       {/* ---------------------------------------------------- */}
-                      <Route element={<LayoutCenter/>}>
+                      <Route element={<LayoutCenter preventLoggedPaths={['/', '/login', '/register']} />}>
                           <Route path="/" element={<MainPage />} />
                           <Route path="/login" element={<LoginPage />} />
                           <Route path="/register" element={<RegisterPage />} />

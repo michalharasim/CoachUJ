@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import {type Profile} from "@/lib/types";
+import {type DecodedToken, type Profile} from "@/lib/types";
+import {jwtDecode} from "jwt-decode";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
