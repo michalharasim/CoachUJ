@@ -9,13 +9,12 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {workoutLogFormSchema, type WorkoutLogFormValues} from "@/lib/schemas/LoggingSchemas";
 import {FormControl, FormField, Form, FormItem, FormMessage, FormLabel} from '@/components/ui/form';
 import {Textarea} from "@/components/ui/textarea";
+import {useAuth} from "@/contexts/auth-context";
 
-type WorkoutDetailsPageProps = {
-    isCoachView: boolean
-}
 
-const WorkoutDetailsPage = ({isCoachView} : WorkoutDetailsPageProps) => {
+const WorkoutDetailsPage = () => {
     const { workoutId } = useParams();
+    const {user, isLoading} = useAuth();
     const workout = sampleWorkoutPlans.find(plan => plan.id === workoutId);
     if (!workout) {
         return (
@@ -51,13 +50,21 @@ const WorkoutDetailsPage = ({isCoachView} : WorkoutDetailsPageProps) => {
         alert("Dane treningu zapisane w konsoli!");
     };
 
+    if (isLoading) {
+        return <div className="text-center p-6">Ładowanie...</div>;
+    }
+
+    if (!user) {
+        return <div className="text-center p-6 text-red-500">Błąd: Użytkownik niezalogowany.</div>;
+    }
+
     return (
         <div className="container mx-auto p-6 text-center">
             <h1 className="text-xl md:text-4xl font-bold  md:mb-4">{workout.name}</h1>
             <p className="text-md md:text-lg mb-1">Trener: {getName(workout.author)}</p>
             <span className="flex flex-col text-md md:text-lg mb-1">Notatka Trenera: <span>{workout.note}</span></span>
             <p className="text-md md:text-lg mb-1 md:mb-3">{workout.date}</p>
-            {!existingLogs && !isCoachView ? (
+            {!existingLogs && user.role == "klient" ? (
                 <Form {...form}>
                     <form onSubmit={handleSubmit(onLogSubmit)}>
                         <FormField
@@ -103,7 +110,6 @@ const WorkoutDetailsPage = ({isCoachView} : WorkoutDetailsPageProps) => {
                             actualWeight={existingLogs ? existingLogs.log_exercises[index].actualWeight : []}
                             control={control}
                             exerciseIndex={index}
-                            isCoachView={isCoachView}
                         />
                     ))}
 

@@ -6,6 +6,7 @@ import type {Exercise} from "@/lib/types";
 import {formatSecondsToMinutesAndSeconds} from "@/lib/utils";
 import {type Control, Controller} from "react-hook-form";
 import {Input} from "@/components/ui/input";
+import {useAuth} from "@/contexts/auth-context";
 
 type ExerciseTableRowProps = {
     exercise: Exercise;
@@ -18,7 +19,6 @@ type ExerciseTableRowProps = {
     actualBreakTime?: number[];
     control: Control<any>;
     exerciseIndex: number;
-    isCoachView: boolean;
 }
 
 const ExerciseTableRow = ({
@@ -31,11 +31,19 @@ const ExerciseTableRow = ({
     actualBreakTime,
     control,
     exerciseIndex,
-    isCoachView
                           } : ExerciseTableRowProps) => {
 
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const hasLogs = actualReps && actualReps.length > 0;
+    const {user, isLoading} = useAuth();
+
+    if (isLoading) {
+        return <div className="text-center p-6">Ładowanie...</div>;
+    }
+
+    if (!user) {
+        return <div className="text-center p-6 text-red-500">Błąd: Użytkownik niezalogowany.</div>;
+    }
 
     return (
         <>
@@ -73,7 +81,7 @@ const ExerciseTableRow = ({
                                 <TableRow key={exerciseIndex + "_" + setIndex}>
                                     <TableCell>{setIndex + 1}</TableCell>
                                     <TableCell className="text-center">
-                                        {!hasLogs && !isCoachView ? (
+                                        {!hasLogs && user.role == "klient" ? (
                                             <Controller
                                                 name={`log_exercises.${exerciseIndex}.actualReps.${setIndex}`}
                                                 control={control}
@@ -95,7 +103,7 @@ const ExerciseTableRow = ({
                                         )}
                                     </TableCell>
                                     <TableCell className="text-center">
-                                        {!hasLogs && !isCoachView ? (
+                                        {!hasLogs && user.role == "klient" ? (
                                             <Controller
                                                 name={`log_exercises.${exerciseIndex}.actualWeight.${setIndex}`}
                                                 control={control}
@@ -118,7 +126,7 @@ const ExerciseTableRow = ({
                                         )}
                                     </TableCell>
                                     <TableCell className="text-center">
-                                        {!hasLogs && !isCoachView ? (
+                                        {!hasLogs && user.role == "klient" ? (
                                             <Controller
                                                 name={`log_exercises.${exerciseIndex}.actualBreakTime.${setIndex}`}
                                                 control={control}

@@ -7,6 +7,8 @@ import {Link} from "react-router-dom";
 import React from 'react';
 import {Checkbox} from "@/components/ui/checkbox";
 import {useNavigate} from "react-router-dom";
+import {authApi} from "@/lib/axios_instance";
+import axios from "axios";
 
 const RegisterPage = () : React.ReactElement => {
     const [password, setPassword] = useState<string>('');
@@ -64,34 +66,28 @@ const RegisterPage = () : React.ReactElement => {
         };
 
         try {
-            const response = await fetch('http://localhost:2000/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.log(errorData);
-                alert(errorData.error || 'Wystąpił błąd rejestracji');
-                return;
-            }
-
-
+            await authApi.post('/register', data);
+            alert("Rejestracja pomyślna!");
+            setIsCoachAccount(false);
+            setPasswordError(null);
+            setPasswordMatchError(null);
+            setUsernameError(null);
+            navigate('/login');
         } catch (error) {
-            console.error('Błąd sieci:', error);
-            alert("Nie można połączyć się z serwerem.");
-        }
+            if (axios.isAxiosError(error)) {
+                const responseData = error.response?.data;
+                let errorMessage = 'Wystąpił nieznany błąd rejestracji.';
 
-        alert("Rejestracja pomyślna!");
-        setIsCoachAccount(false);
-        setPasswordError(null);
-        setPasswordMatchError(null);
-        setUsernameError(null);
-        navigate('/login');
+                if (responseData && typeof responseData === 'object' && 'error' in responseData) {
+                    errorMessage = responseData.error;
+                }
+
+                alert(errorMessage);
+            } else {
+                console.error('Błąd sieci:', error);
+                alert("Nie można połączyć się z serwerem.");
+            }
+        }
     };
 
     return (

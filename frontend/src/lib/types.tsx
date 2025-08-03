@@ -70,3 +70,21 @@ export type Message = {
     timestamp: string;
 }
 
+export type DecodedToken = {
+    user_id: string;
+    role: 'trener' | 'klient';
+    exp: number;
+}
+
+export interface TokenUserData {
+    user_id: string;
+    role: 'trener' | 'klient';
+}
+
+export type AuthContextType = {
+    user: TokenUserData | null;
+    isLoading: boolean;
+    login: (token: string) => void;
+    logout: () => void;
+}
+

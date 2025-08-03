@@ -13,9 +13,9 @@ import {Avatar, AvatarFallback} from "@/components/ui/avatar";
 import ThemeToggler from "@/components/ThemeToggler";
 import LogoutButton from "@/components/LogoutButton";
 import {AvatarFallBackImage} from "@/lib/tsx_utils";
+import NavigationCoachLinks from "@/components/navigation/NavigationCoachLinks";
 
-const MobileNavBar = () => {
-
+const MobileNavBar = ({ role }: { role: "trener" | "klient" }) => {
 
     return (
         <div className="md:hidden flex flex-row bg-sidebar justify-between items-center p-1">
@@ -32,7 +32,7 @@ const MobileNavBar = () => {
                         </SheetTitle>
                     </SheetHeader>
                     <nav className="flex flex-col gap-3 pt-3 font-semibold text-xl items-center">
-                        <NavigationClientLinks/>
+                        {role == "klient" ? <NavigationClientLinks/> : <NavigationCoachLinks/>}
                     </nav>
                     <SheetFooter className="flex flex-col justify-center items-center gap-5">
                         <ThemeToggler/>

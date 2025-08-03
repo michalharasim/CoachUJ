@@ -3,13 +3,18 @@ import {Input} from "@/components/ui/input.tsx";
 import {Label} from "@/components/ui/label.tsx";
 import {useState} from "react";
 import {Button} from "@/components/ui/button.tsx";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import React from 'react';
+import { useAuth } from '@/contexts/auth-context';
+import { authApi } from '@/lib/axios_instance'
+import axios from "axios";
 
 const LoginPage = () : React.ReactElement => {
     const [password, setPassword] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [isError, setIsError] = useState<boolean>(false);
+    const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -17,40 +22,34 @@ const LoginPage = () : React.ReactElement => {
             setIsError(true);
             return;
         }
-
         const data = {
             email,
             password,
         };
 
         try {
-            const response = await fetch('http://localhost:2000/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.log(errorData);
-                alert(errorData.error || 'Wystąpił błąd logowania');
-                return;
-            }
-
-
+            const response = await authApi.post('/login', data);
+            // logowanie, zapis tokenu do localStorage
+            const jsonResponse : { token: string } = await response.data;
+            login(jsonResponse.token);
+            setIsError(false);
+            setPassword('');
+            setEmail('');
+            navigate('/dashboard', { replace: true });
         } catch (error) {
-            console.error('Błąd sieci:', error);
-            alert("Nie można połączyć się z serwerem.");
+            if (axios.isAxiosError(error)) {
+                // czy odpowiedz serwera istnieje
+                const responseData = error.response?.data;
+                let errorMessage = 'Wystąpił nieznany błąd logowania.';
+                if (responseData && typeof responseData === 'object' && 'error' in responseData) {
+                    errorMessage = responseData.error;
+                }
+                alert(errorMessage);
+            } else {
+                console.error('Błąd sieci:', error);
+                alert("Nie można połączyć się z serwerem.");
+            }
         }
-
-
-        setIsError(false);
-        setPassword('');
-        setEmail('');
-        alert("Zalogowano")
     };
 
     return (

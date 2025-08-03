@@ -69,7 +69,7 @@ exports.login = async (req, res) => {
             return res.status(401).json({ error: 'Błąd autentykacji' });
         }
 
-        const token = jwt.sign({ user_id: user.id }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ user_id: user.id, role: user.role }, process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_EXPIRES_IN
         });
 

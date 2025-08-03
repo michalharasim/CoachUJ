@@ -26,7 +26,7 @@ const ClientsPage = () => {
                                 variant="link"
                                 className="w-full cursor-pointer "
                             >
-                                <Link to={`/clients/logs/${userProfile.username}`}> {/* Navigate to history URL */}
+                                <Link to={`/clients/logs/${userProfile.username}`}>
                                     Sprawdź historię treningów
                                 </Link>
                             </Button>

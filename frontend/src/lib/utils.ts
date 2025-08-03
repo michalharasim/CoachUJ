@@ -22,3 +22,13 @@ export function formatSecondsToMinutesAndSeconds(totalSeconds: number): string {
 
   return `${minutes}:${formattedSeconds}`;
 }
+
+export const isTokenExpired = (token: string): boolean => {
+  try {
+    const decodedToken = jwtDecode<DecodedToken>(token);
+    const currentTime = Date.now() / 1000;
+    return decodedToken.exp < currentTime;
+  } catch (error) {
+    return true;
+  }
+};

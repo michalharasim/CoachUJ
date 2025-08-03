@@ -16,34 +16,44 @@ import ClientsPage from "@/pages/ClientsPage";
 import InvitesPage from "@/pages/InvitesPage";
 import PlansPage from "@/pages/PlansPage";
 import ExercisesPage from "@/pages/ExercisesPage";
+import {AuthProvider} from "@/contexts/auth-context";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 function App() {
   return (
       <Router>
-          <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-              <Routes>
-                  <Route element={<Layout/>}>
-                      <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/profile" element={<Profile />} />
-                      <Route path="/coaches" element={<CoachPage />} />
-                      <Route path="/workouts" element={<WorkoutPage coach={false} />} />
-                      <Route path="/messages" element={<MessagesPage />} />
-                      <Route path="/workouts/:workoutId" element={<WorkoutDetailsPage isCoachView={false} />} />
-                      <Route path="/clients" element={<ClientsPage />} />
-                      <Route path="/clients/logs/:username" element={<WorkoutPage coach={true} />} />
-                      <Route path="/clients/logs/plan/:workoutId" element={<WorkoutDetailsPage isCoachView={true} />} />
-                      <Route path="/invites" element={<InvitesPage />} />
-                      <Route path="/plans" element={<PlansPage />} />
-                      <Route path="/exercises" element={<ExercisesPage />} />
-                  </Route>
-                  <Route element={<LayoutCenter/>}>
-                      <Route path="/" element={<MainPage />} />
-                      <Route path="/login" element={<LoginPage />} />
-                      <Route path="/register" element={<RegisterPage />} />
-                      <Route path="*" element={<NotFoundPage />} />
-                  </Route>
-              </Routes>
-          </ThemeProvider>
+          <AuthProvider>
+              <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+                  <Routes>
+                      {/* ---------------------------------------------------- */}
+                      {/* TRASY PUBLICZNE */}
+                      {/* ---------------------------------------------------- */}
+                      <Route element={<LayoutCenter/>}>
+                          <Route path="/" element={<MainPage />} />
+                          <Route path="/login" element={<LoginPage />} />
+                          <Route path="/register" element={<RegisterPage />} />
+                          <Route path="*" element={<NotFoundPage />} />
+                      </Route>
+                      {/* ---------------------------------------------------- */}
+                      {/* TRASY CHRONIONE */}
+                      {/* ---------------------------------------------------- */}
+                      <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                          <Route path="/dashboard" element={<Dashboard />} />
+                          <Route path="/profile" element={<Profile />} />
+                          <Route path="/coaches" element={<CoachPage />} />
+                          <Route path="/workouts" element={<WorkoutPage />} />
+                          <Route path="/messages" element={<MessagesPage />} />
+                          <Route path="/workouts/:workoutId" element={<WorkoutDetailsPage />} />
+                          <Route path="/clients" element={<ClientsPage />} />
+                          <Route path="/clients/logs/:username" element={<WorkoutPage />} />
+                          <Route path="/clients/logs/plan/:workoutId" element={<WorkoutDetailsPage />} />
+                          <Route path="/invites" element={<InvitesPage />} />
+                          <Route path="/plans" element={<PlansPage />} />
+                          <Route path="/exercises" element={<ExercisesPage />} />
+                      </Route>
+                  </Routes>
+              </ThemeProvider>
+          </AuthProvider>
       </Router>
   )
 }
