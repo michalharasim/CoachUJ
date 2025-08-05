@@ -28,11 +28,21 @@ exports.register = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        await User.create({
+        const newUser = await User.create({
             username,
             email,
             password: hashedPassword,
             role: accRole,
+        });
+
+        await fetch('http://localhost:2137/api/users/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: newUser.id,
+                username: newUser.username,
+                role: newUser.role
+            })
         });
 
         res.status(201).json({ message: 'Zarejestrowano pomyślnie' });

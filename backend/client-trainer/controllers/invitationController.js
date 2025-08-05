@@ -5,10 +5,13 @@ const ClientCoachLink = require('../models/ClientCoachLink');
 
 const sendInvitation = async (req, res) => {
   const { inviterID, inviteeID } = req.body;
-  // todo - only current trainer can send his own invitation
+  const requestUserId = req.user_id;
   try {
     if (!inviterID || !inviteeID) {
       throw new ApiError(400, 'inviterID and inviteeID are required.');
+    }
+    if (String(requestUserId) !== String(inviterID)) {
+      throw new ApiError(403, 'You can only send invitations as yourself.');
     }
 
     const inviter = await User.findByPk(inviterID);
@@ -37,7 +40,7 @@ const sendInvitation = async (req, res) => {
 };
 
 const getPendingInvitations = async (req, res) => {
-  const userID = '1'; // TODO - take from token
+  const userID = req.user_id;
   try {
     const invitations = await Invitation.findAll({ where: { inviteeID: userID } });    
     res.status(200).json(invitations);
@@ -49,14 +52,14 @@ const getPendingInvitations = async (req, res) => {
 const respondToInvitation = async(req, res) => {
   const { id } = req.params;
   const { action } = req.body;
-  const userId = '1'; // TODO take from token
+  const userId = req.user_id;
 
   try {
     const invitation = await Invitation.findByPk(id);
     if (!invitation) {
       return res.status(404).json({ error: 'Invitation with the given ID not found.' });
     }
-    if (invitation.inviteeID !== userId) {
+    if (String(invitation.inviteeID) !== String(userId)) {
       return res.status(403).json({ error: 'Forbidden: You can only respond to your own invitations' });
     }
 

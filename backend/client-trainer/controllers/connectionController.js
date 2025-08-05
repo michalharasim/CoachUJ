@@ -3,11 +3,15 @@ const ApiError = require('../utils/ApiError');
 const User = require('../models/User');
 
 const deleteConnection = async (req, res) => {
-  const { userID } = req.params;
-
+  const requestingUserId = req.user_id;
+  const targetUserId = req.params.userID;
+  console.log(`Requesting user ID: ${requestingUserId}, Target user ID: ${targetUserId}`);
   try {
     const deletedCount = await ClientCoachLink.destroy({
-      where: { clientID: userID }
+      where: {
+        clientID: targetUserId,
+        coachID: requestingUserId
+      }
     });
 
     if (deletedCount === 0) {
@@ -22,7 +26,7 @@ const deleteConnection = async (req, res) => {
 };
 
 const getClientsOfTrainer = async (req, res) => {
-  const { trainerId } = req.params;
+  const trainerId = req.user_id;
 
   try {
     const clientLinks = await ClientCoachLink.findAll({
