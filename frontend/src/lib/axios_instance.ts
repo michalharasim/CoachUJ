@@ -12,7 +12,7 @@ const createProtectedApi = (baseURL: string): AxiosInstance => {
             const token = localStorage.getItem('token');
             if (token) {
                 if (isTokenExpired(token)) {
-                    console.warn('Token wygasł. Wylogowywanie...');
+                    console.warn('Token expired. Logging Out...');
                     localStorage.removeItem('token');
                     window.location.href = '/login';
                     return Promise.reject(new Error('Token expired'));
@@ -38,5 +38,5 @@ const createPublicApi = (baseURL: string): AxiosInstance => {
 
 // Instancje dla konkretnych serwisów
 export const authApi = createPublicApi('http://localhost:2000');
-export const trainerClientApi = createProtectedApi('http://localhost:2137');
+export const trainerClientApi = createProtectedApi('http://localhost:2137/api');
 export const plansExercisesApi = createProtectedApi('http://localhost:8080');

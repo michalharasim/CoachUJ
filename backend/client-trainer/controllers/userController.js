@@ -3,16 +3,11 @@ const User = require('../models/User');
 
 
 const updateUserProfile = async (req, res) => {
-  const targetUserId = req.params.userId;
   const requestingUserId = req.user_id;
   try {
-    if (String(requestingUserId) !== String(targetUserId)) {
-      throw new ApiError(403, 'You can only edit your own profile');
-    }
-
     const user = await User.findOne({
       where: {
-        userID: targetUserId
+        userID: requestingUserId
       }
     });
 
@@ -35,6 +30,7 @@ const updateUserProfile = async (req, res) => {
 
 const syncUserFromAuthorization = async (req, res) => {
   const authUser = req.body;
+  console.log(authUser);
   if (!authUser || !authUser.id || !authUser.username || !authUser.role) {
     return res.status(400).json({ error: 'Missing required user data' });
   }
@@ -55,4 +51,28 @@ const syncUserFromAuthorization = async (req, res) => {
   }
 };
 
-module.exports = { updateUserProfile, syncUserFromAuthorization };
+const getUserProfile = async (req, res) => {
+  const requestingUserId = req.user_id;
+
+  try {
+    const user = await User.findOne({
+      where: {
+        userID: requestingUserId,
+      },
+    });
+
+    if (!user) {
+      throw new ApiError(404, 'User not found');
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    if (error instanceof ApiError) {
+      res.status(error.statusCode).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+};
+
+module.exports = { updateUserProfile, syncUserFromAuthorization, getUserProfile};

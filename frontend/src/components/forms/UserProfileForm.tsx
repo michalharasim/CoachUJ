@@ -21,7 +21,7 @@ const UserProfileForm = ({ currentUser, onSubmit, isLoading } : UserProfileFormP
     const form  = useForm<UserProfileFormValues>({
         resolver: zodResolver(userProfileSchema),
         defaultValues: {
-            email: currentUser.email,
+            email: currentUser.email || "ELO",
             username: currentUser.username,
             givenName: currentUser.givenName || '',
             surname: currentUser.surname || '',

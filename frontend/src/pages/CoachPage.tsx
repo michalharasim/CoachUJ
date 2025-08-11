@@ -1,9 +1,14 @@
 import ProfileCard from "@/components/ProfileCard";
-import {allCoaches, yourCoaches} from "@/lib/example_data";
+import {yourCoaches} from "@/lib/example_data";
+import {useEffect, useState} from "react";
+import {type Profile} from "@/lib/types";
+import axios from "axios";
+import {trainerClientApi} from "@/lib/axios_instance";
 
 
 
 const CoachPage = () => {
+    const [allCoaches, setAllCoaches] = useState<Profile[]>([]);
 
     const onSendInvitation = (username: string) => {
         alert(`Zaproszenie do współpracy dla ${username} zostało wysłane!`);
@@ -12,6 +17,36 @@ const CoachPage = () => {
     const onSendMessage = (username: string) => {
         alert(`Wiadomość dla ${username} zostało wysłane!`);
     }
+
+    const fetchCoaches = async () => {
+        try {
+            const response = await trainerClientApi.get('/trainers');
+            const jsonData : Profile[] = response.data;
+            console.log(jsonData);
+            setAllCoaches(jsonData);
+        } catch (error) {
+            // Check if the error is from Axios
+            if (axios.isAxiosError(error)) {
+                // Access the server's response data
+                const responseData = error.response?.data;
+                let errorMessage = 'An unknown fetch trainers error occurred.';
+
+                // Check if the response data is an object with an 'error' property
+                if (responseData && typeof responseData === 'object' && 'error' in responseData) {
+                    errorMessage = responseData.error;
+                }
+
+                alert(errorMessage);
+            } else {
+                console.error('Network error:', error);
+                alert("Cannot connect to the server.");
+            }
+        }
+    };
+
+    useEffect(() => {
+        fetchCoaches();
+    }, []);
 
     return (
         <div className="w-full h-full mb-5">
