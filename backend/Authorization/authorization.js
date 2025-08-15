@@ -1,8 +1,38 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const jose = require('jose');
 const { Op } = require('sequelize');
 const User = require('./models/User');
 require('dotenv').config();
+
+const encryptionKey = jose.base64url.decode(process.env.ENCRYPTION_KEY);
+
+
+async function encryptPayload(payload) {
+    return await new jose.CompactEncrypt(
+        new TextEncoder().encode(JSON.stringify(payload))
+    )
+        .setProtectedHeader({ alg: 'dir', enc: 'A256GCM' })
+        .encrypt(encryptionKey);
+}
+
+
+async function generateToken(user) {
+    const payload = {
+        user_id: user.id,
+        role: user.role,
+        email: user.email
+    };
+
+    const encryptedPayload = await encryptPayload(payload);
+
+    return jwt.sign(
+        { data: encryptedPayload },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES_IN, algorithm: 'HS256' }
+    );
+}
+
 
 exports.register = async (req, res) => {
     try {
@@ -25,7 +55,6 @@ exports.register = async (req, res) => {
         }
 
         let accRole = isCoach ? 'trener' : 'klient';
-
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = await User.create({
@@ -52,26 +81,19 @@ exports.register = async (req, res) => {
     }
 };
 
+
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res
-                .status(400)
-                .json({ error: 'email and password are required' });
+            return res.status(400).json({ error: 'email and password are required' });
         }
 
-        const user = await User.findOne({
-            where: {
-                [Op.or]: [{ email }]
-            }
-        });
+        const user = await User.findOne({ where: { email } });
 
         if (!user) {
-            return res
-                .status(401)
-                .json({ error: 'No user with this username or email' });
+            return res.status(401).json({ error: 'No user with this email' });
         }
 
         const passwordMatch = await bcrypt.compare(password, user.password);
@@ -79,10 +101,8 @@ exports.login = async (req, res) => {
             return res.status(401).json({ error: 'Błąd autentykacji' });
         }
 
-        const token = jwt.sign({ user_id: user.id, role: user.role, email: user.email }, process.env.JWT_SECRET, {
-            expiresIn: process.env.JWT_EXPIRES_IN
-        });
-
+        const token = await generateToken(user);
+        console.log("token:", token);
         res.status(200).json({ token });
     } catch (error) {
         console.error(error);

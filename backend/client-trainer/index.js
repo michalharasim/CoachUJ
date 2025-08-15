@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const PORT = 2137;
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 app.use(express.json());
@@ -9,6 +10,8 @@ app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true
 }));
+
+app.use('/uploads', express.static(path.join(__dirname, '..', 'Authorization', 'uploads')));
 
 const trainerRoutes = require('./routes/trainers');
 const invitationRoutes = require('./routes/invitations');

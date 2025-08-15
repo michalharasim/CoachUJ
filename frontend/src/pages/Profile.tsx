@@ -1,6 +1,6 @@
 import UserProfileForm from "@/components/forms/UserProfileForm";
 import {useState, useEffect} from "react";
-import {User} from "@/lib/types";
+import type {User} from "@/lib/types";
 import {trainerClientApi} from "@/lib/axios_instance"
 
 const Profile = () => {
