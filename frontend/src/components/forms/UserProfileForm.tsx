@@ -13,7 +13,7 @@ import {AvatarFallBackImage} from "@/lib/tsx_utils";
 
 type UserProfileFormProps = {
     currentUser: User;
-    onSubmit: (userProfileData: UserProfileFormValues) => void;
+    onSubmit: (data: FormData) => void;
     isLoading: boolean;
 };
 
@@ -43,15 +43,34 @@ const UserProfileForm = ({ currentUser, onSubmit, isLoading } : UserProfileFormP
                 URL.revokeObjectURL(url);
             };
         } else if (currentUser.picture) {
-            setDisplayImageUrl(currentUser.picture);
+            setDisplayImageUrl(`http://localhost:2137${currentUser.picture}`);
         } else {
             setDisplayImageUrl(undefined);
         }
     }, [profilePictureFromForm, currentUser.picture]);
 
+    const handleFormSubmit = (data: UserProfileFormValues) => {
+        const formData = new FormData();
+
+        Object.entries(data).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+                if (key !== 'profilePicture') {
+                    formData.append(key, value as string);
+                }
+            }
+        });
+
+        if (data.profilePicture) {
+            formData.append('profilePicture', data.profilePicture);
+        }
+
+        onSubmit(formData);
+    };
+
+
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className={ "grid flex-col gap-4"}>
+            <form onSubmit={form.handleSubmit(handleFormSubmit)} className={ "grid flex-col gap-4"}>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
                     <div className="flex flex-row items-center gap-1">
                         <Avatar className="w-[100px] h-[100px]">
@@ -188,9 +207,9 @@ const UserProfileForm = ({ currentUser, onSubmit, isLoading } : UserProfileFormP
                         </FormItem>
                     )}
                 />
-            <Button type="submit" disabled={isLoading} className="cursor-pointer" size="lg">
-                {isLoading ? "Zapisywanie..." : "Zapisz zmiany"}
-            </Button>
+                <Button type="submit" disabled={isLoading} className="cursor-pointer" size="lg">
+                    {isLoading ? "Zapisywanie..." : "Zapisz zmiany"}
+                </Button>
             </form>
         </Form>
     );

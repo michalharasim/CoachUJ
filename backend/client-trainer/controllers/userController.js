@@ -15,7 +15,13 @@ const updateUserProfile = async (req, res) => {
       throw new ApiError(404, 'User with the given ID not found');
     }
 
-    await user.update(req.body);
+    const updateData = { ...req.body };
+    console.log('plik: ', req.file);
+    if (req.file) {
+      updateData.picture = `/uploads/${req.file.filename}`;
+    }
+
+    await user.update(updateData);
 
     res.status(200).json(user);
 
