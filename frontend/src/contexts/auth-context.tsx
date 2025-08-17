@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { AuthContextType} from '@/lib/types';
-import {trainerClientApi, authApi}  from "@/lib/axios_instance";
+import {trainerClientApi}  from "@/lib/axios_instance";
 
 type AuthProviderProps = {
     children: ReactNode;
@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 username: user_data.username,
                 isCoach: user_data.isCoach,
                 email: user_data.email,
-                picture: `${authApi.defaults.baseURL}${user_data.picture}`
+                picture: `http://localhost:2137${user_data.picture}`
             });
         } catch (error) {
             console.error("Failed to fetch user data:", error);

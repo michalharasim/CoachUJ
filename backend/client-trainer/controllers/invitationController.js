@@ -4,29 +4,35 @@ const User = require('../models/User');
 const ClientCoachLink = require('../models/ClientCoachLink');
 
 const sendInvitation = async (req, res) => {
-  const { inviterID, inviteeID } = req.body;
+  const {inviteeID} = req.body;
   const requestUserId = req.user_id;
+  console.log(inviteeID, requestUserId);
   try {
-    if (!inviterID || !inviteeID) {
-      throw new ApiError(400, 'inviterID and inviteeID are required.');
-    }
-    if (String(requestUserId) !== String(inviterID)) {
-      throw new ApiError(403, 'You can only send invitations as yourself.');
+    if (!inviteeID) {
+      throw new ApiError(400, 'inviteeUsername is required.');
     }
 
-    const inviter = await User.findByPk(inviterID);
+    const inviter = await User.findByPk(requestUserId);
     const invitee = await User.findByPk(inviteeID);
 
     if (!inviter || inviter.role !== 'client' || !invitee || invitee.role !== 'trainer') {
       throw new ApiError(400, 'Invalid inviterID or inviteeID.');
     }
 
-    const existing = await Invitation.findOne({ where: { inviterID, inviteeID } });
+    const existing = await Invitation.findOne({
+      where: {
+        inviterID: requestUserId,
+        inviteeID: inviteeID
+      }
+    });
     if (existing) {
       throw new ApiError(409, 'Invitation already exists.');
     }
 
-    await Invitation.create({ inviterID, inviteeID });
+    await Invitation.create({
+      inviterID: requestUserId,
+      inviteeID: inviteeID
+    });
 
     res.status(200).json({});
   } catch (error) {

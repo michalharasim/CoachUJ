@@ -17,7 +17,7 @@ const ClientsPage = () => {
                         surname={userProfile.surname}
                         location={userProfile.location}
                         phone={userProfile.phone}
-                        avatar={userProfile.avatar}
+                        picture={userProfile.picture}
                         description={userProfile.description}
                         buttonText=""
                         OnClick={null}

@@ -16,7 +16,7 @@ export type Profile= {
     surname: string;
     location: string;
     phone: string;
-    avatar: string;
+    picture: string;
     description: string;
 }
 

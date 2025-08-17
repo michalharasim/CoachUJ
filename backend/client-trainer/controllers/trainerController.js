@@ -1,13 +1,39 @@
 const User = require('../models/User');
+const ClientCoachLink = require('../models/ClientCoachLink');
 const ApiError = require('../utils/ApiError');
 
 const getAllTrainers = async (req, res) => {
+  const requestUserId = req.user_id;
   try {
     const trainers = await User.findAll({
       where: { role: 'trainer' }
     });
 
-    res.status(200).json(trainers);
+    const trainersWithStatus = await Promise.all(
+        trainers.map(async (trainer) => {
+          try {
+            const isConnected = await ClientCoachLink.findOne({
+              where: {
+                clientID: String(requestUserId),
+                coachID: trainer.userID,
+              },
+            });
+
+            return {
+              ...trainer.toJSON(),
+              isConnected: !!isConnected,
+            };
+          } catch (innerError) {
+            console.error(`Error processing trainer with ID ${trainer.id}:`, innerError);
+            return {
+              ...trainer.toJSON(),
+              isConnected: false,
+            };
+          }
+        })
+    );
+
+    res.status(200).json(trainersWithStatus);
   } catch (error) {
     res.status(500).json({ error: 'Wystąpił błąd przy pobieraniu trenerów' });
   }

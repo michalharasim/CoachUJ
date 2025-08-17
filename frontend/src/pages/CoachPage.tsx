@@ -1,29 +1,46 @@
 import ProfileCard from "@/components/ProfileCard";
-import {yourCoaches} from "@/lib/example_data";
 import {useEffect, useState} from "react";
 import {type Profile} from "@/lib/types";
 import axios from "axios";
 import {trainerClientApi} from "@/lib/axios_instance";
+import {useNavigate} from "react-router-dom";
 
 
 
 const CoachPage = () => {
-    const [allCoaches, setAllCoaches] = useState<Profile[]>([]);
+    const [allCoaches, setAllCoaches] = useState<(Profile & { userID: number, isConnected: boolean })[]>([]);
+    const [yourCoaches, setYourCoaches] = useState<(Profile & { userID: number, isConnected: boolean })[]>([]);
+    const navigate = useNavigate();
 
-    const onSendInvitation = (username: string) => {
-        alert(`Zaproszenie do współpracy dla ${username} zostało wysłane!`);
+    const onSendInvitation = async (userID: number) => {
+        try {
+            await trainerClientApi.post('/invitations/', {
+                inviteeID: userID
+            });
+            alert("Zaproszenie wysłane prawidłowo");
+
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.error("Failed to send invitation:", error.response?.data || error.message);
+            } else {
+                console.error("An unexpected error occurred:", error);
+            }
+        }
     }
 
-    const onSendMessage = (username: string) => {
-        alert(`Wiadomość dla ${username} zostało wysłane!`);
+    const onSendMessage = () => {
+        navigate('/messages');
     }
 
     const fetchCoaches = async () => {
         try {
             const response = await trainerClientApi.get('/trainers');
-            const jsonData : Profile[] = response.data;
-            console.log(jsonData);
-            setAllCoaches(jsonData);
+            const jsonData : (Profile & { userID: number, isConnected: boolean})[] = response.data;
+            const connected = jsonData.filter(coach => coach.isConnected);
+            const notConnected = jsonData.filter(coach => !coach.isConnected);
+
+            setYourCoaches(connected);
+            setAllCoaches(notConnected);
         } catch (error) {
             // Check if the error is from Axios
             if (axios.isAxiosError(error)) {
@@ -60,7 +77,7 @@ const CoachPage = () => {
                         surname={userProfile.surname}
                         location={userProfile.location}
                         phone={userProfile.phone}
-                        avatar={userProfile.avatar}
+                        picture={`http://localhost:2137${userProfile.picture}`}
                         description={userProfile.description}
                         buttonText="Wyślij wiadomość"
                         OnClick={onSendMessage}
@@ -77,9 +94,9 @@ const CoachPage = () => {
                         surname={userProfile.surname}
                         location={userProfile.location}
                         phone={userProfile.phone}
-                        avatar={userProfile.avatar}
+                        picture={`http://localhost:2137${userProfile.picture}`}
                         description={userProfile.description}
-                        OnClick={onSendInvitation}
+                        OnClick={() => onSendInvitation(userProfile.userID)}
                         buttonText="Wyślij zaproszenie do współpracy"
                     />
                 ))}

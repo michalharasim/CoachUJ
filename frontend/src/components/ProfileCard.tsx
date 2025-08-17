@@ -6,27 +6,18 @@ import {Button} from "@/components/ui/button";
 import React from "react";
 
 type ProfileCardProps = Profile & {
-    OnClick?: ((username: string) => void) | null;
+    OnClick: (() => void);
     className?: string;
     buttonText: string;
     SecondButton?: React.ReactNode;
 }
 
-const ProfileCard = ({username, name, surname, location, phone, avatar, description, OnClick, className, buttonText, SecondButton} : ProfileCardProps) => {
-
-    const handleSendInvitation = () => {
-        if (OnClick) {
-            OnClick(username);
-        } else {
-
-        }
-    };
-
+const ProfileCard = ({username, name, surname, location, phone, picture, description, OnClick, className, buttonText, SecondButton} : ProfileCardProps) => {
     return (
         <Card className={`w-full shadow-md shadow-primary gap-1 py-2 ${className || ''}`}>
             <CardTitle className="flex flex-row items-center justify-center gap-2">
                 <Avatar className="w-[80px] h-[80px]">
-                    <AvatarImage src={avatar}/>
+                    <AvatarImage src={picture}/>
                     <AvatarFallback className="bg-accent">
                         {AvatarFallBackImage()}
                     </AvatarFallback>
@@ -47,7 +38,7 @@ const ProfileCard = ({username, name, surname, location, phone, avatar, descript
                     {phone ? `Telefon: ${phone}` : ''}
                 </CardDescription>
                 {buttonText != "" && (
-                    <Button className="w-full cursor-pointer" onClick={handleSendInvitation}>
+                    <Button className="w-full cursor-pointer" onClick={OnClick}>
                         {buttonText}
                     </Button>
                 )}
