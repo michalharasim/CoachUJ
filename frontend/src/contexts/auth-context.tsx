@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { jwtDecode } from 'jwt-decode';
-import type { AuthContextType, DecodedToken, TokenUserData } from '@/lib/types';
-import {isTokenExpired} from "@/lib/utils";
+import type { AuthContextType} from '@/lib/types';
+import {trainerClientApi, authApi}  from "@/lib/axios_instance";
 
 type AuthProviderProps = {
     children: ReactNode;
@@ -10,45 +9,54 @@ type AuthProviderProps = {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-    const [user, setUser] = useState<TokenUserData | null>(null);
+    const [userData, setUserData] = useState<AuthContextType['userData'] | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    const fetchUserData = async () => {
+        try {
+            const response = await trainerClientApi.get('/users/profile/nav');
+            const user_data = response.data;
+
+            setUserData({
+                username: user_data.username,
+                isCoach: user_data.isCoach,
+                email: user_data.email,
+                picture: `${authApi.defaults.baseURL}${user_data.picture}`
+            });
+        } catch (error) {
+            console.error("Failed to fetch user data:", error);
+            setUserData(null);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if (token && !isTokenExpired(token)) {
-            try {
-                const decodedToken = jwtDecode<DecodedToken>(token);
-                setUser({
-                    user_id: decodedToken.user_id,
-                    role: decodedToken.role,
-                });
-            } catch (error) {
-                console.error('Invalid token', error);
-                localStorage.removeItem('token');
-            }
+        if (!token) {
+            setIsLoading(false);
+            return;
+        }else {
+            fetchUserData().then(() => setIsLoading(false));
         }
-        setIsLoading(false);
     }, []);
 
     const login = (token: string) => {
         localStorage.setItem('token', token);
-        const decodedToken = jwtDecode<DecodedToken>(token);
-        setUser({
-            user_id: decodedToken.user_id,
-            role: decodedToken.role,
-        });
+        fetchUserData();
     };
 
     const logout = () => {
         localStorage.removeItem('token');
-        setUser(null);
+        setUserData(null);
     };
 
     const value: AuthContextType = {
-        user,
+        userData,
         isLoading,
         login,
         logout,
+        setUserData,
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

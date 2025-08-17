@@ -57,6 +57,39 @@ const syncUserFromAuthorization = async (req, res) => {
   }
 };
 
+const getUserNavProfile = async (req, res) => {
+  const requestingUserId = req.user_id;
+  try {
+    const user = await User.findOne({
+      where: {
+        userID: requestingUserId,
+      },
+    });
+
+    if (!user) {
+      throw new ApiError(404, 'User not found');
+    }
+
+    // Transform sequelize object to insert email
+    const userProfile = user.get({ plain: true });
+    const returnData = {
+      picture: userProfile.picture,
+      username: userProfile.username,
+      email: req.email,
+      isCoach: userProfile.role === "trainer",
+    }
+
+    res.status(200).json(returnData);
+  } catch (error) {
+    if (error instanceof ApiError) {
+      res.status(error.statusCode).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+};
+
+
 const getUserProfile = async (req, res) => {
   const requestingUserId = req.user_id;
 
@@ -71,7 +104,12 @@ const getUserProfile = async (req, res) => {
       throw new ApiError(404, 'User not found');
     }
 
-    res.status(200).json(user);
+    // Transform sequelize object to insert email
+    const userProfile = user.get({ plain: true });
+    userProfile.email = req.email;
+    userProfile.isCoach = userProfile.role === 'trainer';
+
+    res.status(200).json(userProfile);
   } catch (error) {
     if (error instanceof ApiError) {
       res.status(error.statusCode).json({ error: error.message });
@@ -81,4 +119,4 @@ const getUserProfile = async (req, res) => {
   }
 };
 
-module.exports = { updateUserProfile, syncUserFromAuthorization, getUserProfile};
+module.exports = { updateUserProfile, syncUserFromAuthorization, getUserProfile, getUserNavProfile};

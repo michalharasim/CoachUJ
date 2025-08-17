@@ -15,7 +15,9 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
+    "jose": "^6.0.12",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.2",
     "react-router-dom": "^7.6.3",
     "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7"

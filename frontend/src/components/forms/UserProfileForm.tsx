@@ -4,16 +4,17 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import { userProfileSchema, type UserProfileFormValues } from '@/lib/schemas/UserSchema';
-import type { User } from '@/lib/types';
+import type {User} from '@/lib/types';
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from '../ui/form';
 import { Textarea } from '../ui/textarea';
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {useEffect, useState} from "react";
 import {AvatarFallBackImage} from "@/lib/tsx_utils";
+import {useAuth} from "@/contexts/auth-context";
 
 type UserProfileFormProps = {
     currentUser: User;
-    onSubmit: (data: FormData) => void;
+    onSubmit: (data: UserProfileFormValues) => void;
     isLoading: boolean;
 };
 
@@ -21,7 +22,7 @@ const UserProfileForm = ({ currentUser, onSubmit, isLoading } : UserProfileFormP
     const form  = useForm<UserProfileFormValues>({
         resolver: zodResolver(userProfileSchema),
         defaultValues: {
-            email: currentUser.email || "ELO",
+            email: currentUser.email || "invalid_email",
             username: currentUser.username,
             givenName: currentUser.givenName || '',
             surname: currentUser.surname || '',
@@ -34,6 +35,8 @@ const UserProfileForm = ({ currentUser, onSubmit, isLoading } : UserProfileFormP
     });
     const profilePictureFromForm = form.watch("profilePicture");
     const [displayImageUrl, setDisplayImageUrl] = useState<string | undefined>(undefined);
+    const {setUserData} = useAuth();
+
 
     useEffect(() => {
         if (profilePictureFromForm instanceof File) {
@@ -43,11 +46,26 @@ const UserProfileForm = ({ currentUser, onSubmit, isLoading } : UserProfileFormP
                 URL.revokeObjectURL(url);
             };
         } else if (currentUser.picture) {
-            setDisplayImageUrl(`http://localhost:2137${currentUser.picture}`);
+            const newPictureUrl = `http://localhost:2137${currentUser.picture}`
+            setDisplayImageUrl(newPictureUrl);
+            setUserData(prev => {
+                if (!prev) {
+                    return {
+                        username: currentUser.username,
+                        isCoach: currentUser.isCoach,
+                        email: currentUser.email,
+                        picture: newPictureUrl,
+                    };
+                }
+                return {
+                    ...prev,
+                    picture: newPictureUrl,
+                };
+            });
         } else {
             setDisplayImageUrl(undefined);
         }
-    }, [profilePictureFromForm, currentUser.picture]);
+    }, [profilePictureFromForm, currentUser.picture, setUserData, currentUser.username, currentUser.isCoach, currentUser.email]);
 
     const handleFormSubmit = (data: UserProfileFormValues) => {
         const formData = new FormData();

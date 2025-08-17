@@ -9,13 +9,19 @@ import {
 import {SquareMenu} from "lucide-react";
 import NavigationClientLinks from "@/components/navigation/NavigationClientLinks";
 import {Link} from "react-router-dom";
-import {Avatar, AvatarFallback} from "@/components/ui/avatar";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import ThemeToggler from "@/components/ThemeToggler";
 import LogoutButton from "@/components/LogoutButton";
 import {AvatarFallBackImage} from "@/lib/tsx_utils";
 import NavigationCoachLinks from "@/components/navigation/NavigationCoachLinks";
 
-const MobileNavBar = ({ role }: { role: "trener" | "klient" }) => {
+type MobileNavBarProps = {
+    isCoach: boolean,
+    username: string,
+    picture_url: string,
+}
+
+const MobileNavBar = ({ isCoach, username, picture_url }: MobileNavBarProps) => {
 
     return (
         <div className="md:hidden flex flex-row bg-sidebar justify-between items-center p-1">
@@ -26,13 +32,14 @@ const MobileNavBar = ({ role }: { role: "trener" | "klient" }) => {
                     <SheetHeader>
                         <SheetTitle className="flex flex-row items-center justify-center gap-5">
                             <Avatar>
+                                <AvatarImage src={picture_url}  alt="Your profile info" />
                                 <AvatarFallback className="bg-accent">{AvatarFallBackImage(45)}</AvatarFallback>
                             </Avatar>
-                            <span className="font-semibold text-xl">Nazwa Użytkownika</span>
+                            <span className="font-semibold text-xl">{username}</span>
                         </SheetTitle>
                     </SheetHeader>
                     <nav className="flex flex-col gap-3 pt-3 font-semibold text-xl items-center">
-                        {role == "klient" ? <NavigationClientLinks/> : <NavigationCoachLinks/>}
+                        {isCoach  ? <NavigationCoachLinks/> : <NavigationClientLinks/>}
                     </nav>
                     <SheetFooter className="flex flex-col justify-center items-center gap-5">
                         <ThemeToggler/>

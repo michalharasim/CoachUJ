@@ -2,6 +2,7 @@ import UserProfileForm from "@/components/forms/UserProfileForm";
 import {useState, useEffect} from "react";
 import type {User} from "@/lib/types";
 import {trainerClientApi} from "@/lib/axios_instance"
+import {type UserProfileFormValues} from "@/lib/schemas/UserSchema";
 
 const Profile = () => {
     const [user, setUser] = useState<User | null>(null);

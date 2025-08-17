@@ -8,20 +8,20 @@ type LayoutCenterProps = {
 }
 
 const LayoutCenter = ({ preventLoggedPaths = [] }: LayoutCenterProps) => {
-    const { user, isLoading } = useAuth();
+    const { userData, isLoading } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
 
     useEffect(() => {
         // Logika przekierowania powinna działać tylko, gdy dane użytkownika są już załadowane
         if (!isLoading) {
-            const shouldRedirect = user && preventLoggedPaths.includes(location.pathname);
+            const shouldRedirect = userData && preventLoggedPaths.includes(location.pathname);
 
             if (shouldRedirect) {
                 navigate('/profile', { replace: true });
             }
         }
-    }, [user, isLoading, location.pathname, navigate, preventLoggedPaths]);
+    }, [userData, isLoading, location.pathname, navigate, preventLoggedPaths]);
 
     if (isLoading) {
         return <div>Ładowanie...</div>;

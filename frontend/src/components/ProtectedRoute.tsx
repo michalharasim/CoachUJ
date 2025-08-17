@@ -4,23 +4,19 @@ import { useAuth } from '@/contexts/auth-context';
 
 interface ProtectedRouteProps {
     children: ReactNode;
-    allowedRoles?: ('trener' | 'klient')[];
 }
 
-const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
-    const { user, isLoading } = useAuth();
+const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+    const { userData, isLoading } = useAuth();
 
     if (isLoading) {
         return <div>Loading...</div>;
     }
 
-    if (!user) {
+    if (!userData) {
+        console.log('User is not logged in');
+        console.log(localStorage.getItem('token'));
         return <Navigate to="/login" replace />;
-    }
-
-    if (allowedRoles && !allowedRoles.includes(user.role)) {
-        // Jeśli użytkownik ma niewłaściwą rolę, przekieruj go
-        return <Navigate to="/profile" replace />;
     }
 
     return children;

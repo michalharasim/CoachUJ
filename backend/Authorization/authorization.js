@@ -54,7 +54,7 @@ exports.register = async (req, res) => {
                 .json({ error: 'Nazwa użytkownika lub email już istnieje' });
         }
 
-        let accRole = isCoach ? 'trener' : 'klient';
+        let accRole = isCoach ? 'trainer' : 'client';
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = await User.create({
@@ -102,7 +102,6 @@ exports.login = async (req, res) => {
         }
 
         const token = await generateToken(user);
-        console.log("token:", token);
         res.status(200).json({ token });
     } catch (error) {
         console.error(error);
