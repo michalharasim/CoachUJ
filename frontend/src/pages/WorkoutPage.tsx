@@ -2,17 +2,18 @@ import {sampleWorkoutPlans} from "@/lib/example_data";
 import WorkoutCard from "@/components/workouts/WorkoutCard";
 import {useState} from "react";
 import {Button} from "@/components/ui/button";
-import { useAuth } from '@/contexts/auth-context';
+import {useAuth} from "@/contexts/auth-context";
 
 const WorkoutPage = () => {
     const [view, setView] = useState('current'); // current or archived workouts
-    const {user, isLoading} = useAuth();
+
+    const { userData, isLoading } = useAuth();
 
     if (isLoading) {
         return <div className="text-center p-6">Ładowanie...</div>;
     }
 
-    if (!user) {
+    if (!userData) {
         return <div className="text-center p-6 text-red-500">Błąd: Użytkownik niezalogowany.</div>;
     }
 
@@ -52,7 +53,7 @@ const WorkoutPage = () => {
             <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,2fr))] gap-5 p-5">
                 {filteredWorkouts.length > 0 ? (
                     filteredWorkouts.map((workout) => (
-                        <WorkoutCard key={workout.id} workout={workout} workoutBaseUrl={user.role == "trener" ? "/clients/logs/plan" : "/workouts"} />
+                        <WorkoutCard key={workout.id} workout={workout} workoutBaseUrl={userData.isCoach ? "/clients/logs/plan" : "/workouts"} />
                     ))
                 ) : (
                     <p className="col-span-full text-center text-gray-500 text-lg">Brak treningów do wyświetlenia w tej kategorii.</p>

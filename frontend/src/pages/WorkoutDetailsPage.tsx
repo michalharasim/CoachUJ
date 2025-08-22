@@ -14,8 +14,8 @@ import {useAuth} from "@/contexts/auth-context";
 
 const WorkoutDetailsPage = () => {
     const { workoutId } = useParams();
-    const {user, isLoading} = useAuth();
     const workout = sampleWorkoutPlans.find(plan => plan.id === workoutId);
+    const { userData, isLoading } = useAuth();
     if (!workout) {
         return (
             <div className="container mx-auto p-6 text-center">
@@ -43,6 +43,14 @@ const WorkoutDetailsPage = () => {
         mode: "onBlur"
     });
 
+    if (isLoading) {
+        return <div className="text-center p-6">Ładowanie...</div>;
+    }
+
+    if (!userData) {
+        return <div className="text-center p-6 text-red-500">Błąd: Użytkownik niezalogowany.</div>;
+    }
+
     const { handleSubmit, control } = form;
 
     const onLogSubmit = (data: WorkoutLogFormValues) => {
@@ -50,21 +58,13 @@ const WorkoutDetailsPage = () => {
         alert("Dane treningu zapisane w konsoli!");
     };
 
-    if (isLoading) {
-        return <div className="text-center p-6">Ładowanie...</div>;
-    }
-
-    if (!user) {
-        return <div className="text-center p-6 text-red-500">Błąd: Użytkownik niezalogowany.</div>;
-    }
-
     return (
         <div className="container mx-auto p-6 text-center">
             <h1 className="text-xl md:text-4xl font-bold  md:mb-4">{workout.name}</h1>
             <p className="text-md md:text-lg mb-1">Trener: {getName(workout.author)}</p>
             <span className="flex flex-col text-md md:text-lg mb-1">Notatka Trenera: <span>{workout.note}</span></span>
             <p className="text-md md:text-lg mb-1 md:mb-3">{workout.date}</p>
-            {!existingLogs && user.role == "klient" ? (
+            {!existingLogs && !userData.isCoach ? (
                 <Form {...form}>
                     <form onSubmit={handleSubmit(onLogSubmit)}>
                         <FormField
