@@ -9,11 +9,11 @@ const ClientCoachLink = sequelize.define('ClientCoachLink', {
     allowNull: false
   },
   clientID: {
-    type: DataTypes.STRING,
+    type: DataTypes.INTEGER,
     allowNull: false
   },
   coachID: {
-    type: DataTypes.STRING,
+    type: DataTypes.INTEGER,
     allowNull: false
   }
 }, {

@@ -18,11 +18,12 @@ const CoachPage = () => {
                 inviteeID: userID
             });
             alert("Zaproszenie wysłane prawidłowo");
-
         } catch (error) {
             if (axios.isAxiosError(error)) {
+                alert("Zaproszenie zostało już wysłane");
                 console.error("Failed to send invitation:", error.response?.data || error.message);
             } else {
+                alert("Nieoczekiwany błąd, spróbuj ponownie");
                 console.error("An unexpected error occurred:", error);
             }
         }
@@ -38,7 +39,7 @@ const CoachPage = () => {
             const jsonData : (Profile & { userID: number, isConnected: boolean})[] = response.data;
             const connected = jsonData.filter(coach => coach.isConnected);
             const notConnected = jsonData.filter(coach => !coach.isConnected);
-
+            console.log(response.data);
             setYourCoaches(connected);
             setAllCoaches(notConnected);
         } catch (error) {

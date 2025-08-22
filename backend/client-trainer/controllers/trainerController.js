@@ -1,41 +1,31 @@
 const User = require('../models/User');
 const ClientCoachLink = require('../models/ClientCoachLink');
 const ApiError = require('../utils/ApiError');
+const {Sequelize} = require("sequelize");
 
 const getAllTrainers = async (req, res) => {
   const requestUserId = req.user_id;
   try {
-    const trainers = await User.findAll({
-      where: { role: 'trainer' }
+    const links = await ClientCoachLink.findAll({
+      where: { clientID: requestUserId },
+      attributes: ['coachID'],
     });
 
-    const trainersWithStatus = await Promise.all(
-        trainers.map(async (trainer) => {
-          try {
-            const isConnected = await ClientCoachLink.findOne({
-              where: {
-                clientID: String(requestUserId),
-                coachID: trainer.userID,
-              },
-            });
+    const connectedCoachIds = links.map(link => link.coachID);
 
-            return {
-              ...trainer.toJSON(),
-              isConnected: !!isConnected,
-            };
-          } catch (innerError) {
-            console.error(`Error processing trainer with ID ${trainer.id}:`, innerError);
-            return {
-              ...trainer.toJSON(),
-              isConnected: false,
-            };
-          }
-        })
-    );
+    const trainers = await User.findAll({
+      where: { role: 'trainer' },
+    });
 
-    res.status(200).json(trainersWithStatus);
-  } catch (error) {
-    res.status(500).json({ error: 'Wystąpił błąd przy pobieraniu trenerów' });
+    const trainersWithStatus = trainers.map(trainer => ({
+      ...trainer.toJSON(),
+      isConnected: connectedCoachIds.includes(trainer.userID),
+    }));
+
+    res.json(trainersWithStatus);
+  } catch (err) {
+    console.error('Error fetching trainers:', err);
+    res.status(500).json({ error: 'Failed to fetch trainers' });
   }
 };
 

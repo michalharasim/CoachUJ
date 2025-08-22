@@ -16,7 +16,6 @@ const updateUserProfile = async (req, res) => {
     }
 
     const updateData = { ...req.body };
-    console.log('plik: ', req.file);
     if (req.file) {
       updateData.picture = `/uploads/${req.file.filename}`;
     }
@@ -36,7 +35,6 @@ const updateUserProfile = async (req, res) => {
 
 const syncUserFromAuthorization = async (req, res) => {
   const authUser = req.body;
-  console.log(authUser);
   if (!authUser || !authUser.id || !authUser.username || !authUser.role) {
     return res.status(400).json({ error: 'Missing required user data' });
   }

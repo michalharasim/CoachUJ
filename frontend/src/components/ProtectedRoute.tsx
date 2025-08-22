@@ -14,8 +14,6 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     }
 
     if (!userData) {
-        console.log('User is not logged in');
-        console.log(localStorage.getItem('token'));
         return <Navigate to="/login" replace />;
     }
 

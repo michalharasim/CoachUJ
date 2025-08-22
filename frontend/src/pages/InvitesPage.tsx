@@ -1,37 +1,98 @@
-import {yourCoaches} from "@/lib/example_data";
 import ProfileCard from "@/components/ProfileCard";
 import {Button} from "@/components/ui/button";
+import {trainerClientApi} from "@/lib/axios_instance";
+import type {Profile} from "@/lib/types";
+import axios from "axios";
+import {useEffect, useState} from "react";
 
 const InvitesPage = () => {
+    const [clients, setClients] = useState<(Profile & { userID: number, id: number})[]>([]);
 
-    const onAccept = (username: string) => {
-        alert(`Zaproszenie od ${username} zostało zaakceptowane!`);
+    const handleInvitation = async (id: number, action: 'accept' | 'reject') => {
+        try {
+            await trainerClientApi.post(`/invitations/${id}/respond`, {
+                action: action
+            });
+            fetchInvitations()
+        } catch (error) {
+            // Check if the error is from Axios
+            if (axios.isAxiosError(error)) {
+                // Access the server's response data
+                const responseData = error.response?.data;
+                let errorMessage = 'An unknown error occurred handling the invitation.';
+
+                // Check if the response data is an object with an 'error' property
+                if (responseData && typeof responseData === 'object' && 'error' in responseData) {
+                    errorMessage = responseData.error;
+                }
+
+                alert(errorMessage);
+            } else {
+                console.error('Network error:', error);
+                alert("Cannot connect to the server.");
+            }
+        }
+    };
+
+
+    const onAccept = (invitationID: number) => {
+        handleInvitation(invitationID, 'accept')
     }
 
-    const onDecline = (username: string) => {
-        alert(`Zaproszenie od ${username} zostało anulowane!`);
+    const onDecline = (invitationID: number) => {
+        handleInvitation(invitationID, 'reject')
     }
+
+    const fetchInvitations = async () => {
+        try {
+            const response = await trainerClientApi.get('/invitations');
+
+            setClients(response.data);
+        } catch (error) {
+            // Check if the error is from Axios
+            if (axios.isAxiosError(error)) {
+                // Access the server's response data
+                const responseData = error.response?.data;
+                let errorMessage = 'An unknown fetch invitations error occurred.';
+
+                // Check if the response data is an object with an 'error' property
+                if (responseData && typeof responseData === 'object' && 'error' in responseData) {
+                    errorMessage = responseData.error;
+                }
+
+                alert(errorMessage);
+            } else {
+                console.error('Network error:', error);
+                alert("Cannot connect to the server.");
+            }
+        }
+    };
+
+    useEffect(() => {
+        fetchInvitations();
+    }, []);
 
     return (
         <div className="w-full h-full">
             <p className="text-3xl text-center pt-5 font-semibold">Zaproszenia do współpracy</p>
             <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,2fr))] gap-5 p-5">
-                {yourCoaches.map((userProfile) => (
+                {clients.map((userProfile) => (
+                    // userProfile.id -> invitationID; userProfileUserID -> userID
                     <ProfileCard
                         key={userProfile.username}
                         username={userProfile.username}
                         name={userProfile.name}
                         surname={userProfile.surname}
                         location={userProfile.location}
-                        phone=""
-                        avatar={userProfile.avatar}
+                        phone={userProfile.phone}
+                        picture={userProfile.picture}
                         description={userProfile.description}
                         buttonText="Zaakceptuj"
-                        OnClick={onAccept}
+                        OnClick={() => onAccept(userProfile.id)}
                         SecondButton={
                         <Button
                             variant="destructive"
-                            className="w-full cursor-pointer hover:bg-destructive/70 dark:hover:bg-destructive/50" onClick={() => onDecline(userProfile.username)}>
+                            className="w-full cursor-pointer hover:bg-destructive/70 dark:hover:bg-destructive/50" onClick={() => onDecline(userProfile.id)}>
                             Anuluj
                         </Button>
                     }

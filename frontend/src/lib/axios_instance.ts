@@ -1,5 +1,4 @@
 import axios, {type AxiosInstance } from 'axios';
-import { isTokenExpired } from '@/lib/utils';
 
 // funkcja tworzy instancję Axios z interceptorem dołączającym token
 const createProtectedApi = (baseURL: string): AxiosInstance => {
@@ -11,12 +10,6 @@ const createProtectedApi = (baseURL: string): AxiosInstance => {
         (config) => {
             const token = localStorage.getItem('token');
             if (token) {
-                if (isTokenExpired(token)) {
-                    console.warn('Token expired. Logging Out...');
-                    localStorage.removeItem('token');
-                    window.location.href = '/login';
-                    return Promise.reject(new Error('Token expired'));
-                }
                 config.headers.Authorization = `Bearer ${token}`;
             }
             return config;

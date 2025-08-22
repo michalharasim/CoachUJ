@@ -12,11 +12,11 @@ const Message = sequelize.define('Message', {
     allowNull: false
   },
   senderID: {
-    type: DataTypes.STRING,
+    type: DataTypes.INTEGER,
     allowNull: false
   },
   receiverID: {
-    type: DataTypes.STRING,
+    type: DataTypes.INTEGER,
     allowNull: false
   },
   createdAt: {

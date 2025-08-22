@@ -9,11 +9,11 @@ const Invitation = sequelize.define('Invitation', {
     allowNull: false
   },
   inviterID: {
-    type: DataTypes.STRING,
+    type: DataTypes.INTEGER,
     allowNull: false
   },
   inviteeID: {
-    type: DataTypes.STRING,
+    type: DataTypes.INTEGER,
     allowNull: false
   }
 }, {

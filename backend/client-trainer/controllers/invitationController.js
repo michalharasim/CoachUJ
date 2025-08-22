@@ -6,7 +6,6 @@ const ClientCoachLink = require('../models/ClientCoachLink');
 const sendInvitation = async (req, res) => {
   const {inviteeID} = req.body;
   const requestUserId = req.user_id;
-  console.log(inviteeID, requestUserId);
   try {
     if (!inviteeID) {
       throw new ApiError(400, 'inviteeUsername is required.');
@@ -48,8 +47,20 @@ const sendInvitation = async (req, res) => {
 const getPendingInvitations = async (req, res) => {
   const userID = req.user_id;
   try {
-    const invitations = await Invitation.findAll({ where: { inviteeID: userID } });    
-    res.status(200).json(invitations);
+    const invitations = await Invitation.findAll({
+          where: { inviteeID: userID },
+          include: [{ model: User, as: 'inviter'}]}
+    );
+
+    const flattenedInvitations = invitations.map(invitation => {
+      const { inviter, ...invitationData } = invitation.toJSON();
+      return {
+        ...invitationData,
+        ...inviter
+      };
+    });
+
+    res.status(200).json(flattenedInvitations);
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }

@@ -1,7 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import {type DecodedToken, type Profile} from "@/lib/types";
-import {jwtDecode} from "jwt-decode";
+import {type Profile} from "@/lib/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -24,12 +23,3 @@ export function formatSecondsToMinutesAndSeconds(totalSeconds: number): string {
   return `${minutes}:${formattedSeconds}`;
 }
 
-export const isTokenExpired = (token: string): boolean => {
-  try {
-    const decodedToken = jwtDecode<DecodedToken>(token);
-    const currentTime = Date.now() / 1000;
-    return decodedToken.exp < currentTime;
-  } catch (error) {
-    return true;
-  }
-};
