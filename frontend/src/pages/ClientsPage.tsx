@@ -37,7 +37,7 @@ const ClientsPage = () => {
 
     const fetchClients = async () => {
         try {
-            const response = await trainerClientApi.get('/connections/clients');
+            const response = await trainerClientApi.get('/connections');
 
             setClients(response.data);
         } catch (error) {
@@ -72,7 +72,7 @@ const ClientsPage = () => {
                     <ProfileCard
                         key={userProfile.username}
                         username={userProfile.username}
-                        name={userProfile.name}
+                        givenName={userProfile.givenName}
                         surname={userProfile.surname}
                         location={userProfile.location}
                         phone={userProfile.phone}

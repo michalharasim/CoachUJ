@@ -18,6 +18,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             const user_data = response.data;
 
             setUserData({
+                id: user_data.id,
                 username: user_data.username,
                 isCoach: user_data.isCoach,
                 email: user_data.email,

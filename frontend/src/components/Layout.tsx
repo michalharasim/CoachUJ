@@ -19,14 +19,12 @@ const Layout = () => {
         <div className="flex flex-col md:flex-row h-screen">
             <SideNav isCoach={userData.isCoach} username={userData.username} picture_url={userData.picture}/>
             <MobileNavBar isCoach={userData.isCoach} username={userData.username} picture_url={userData.picture}/>
-            <div className="w-full h-full">
-                <main className="md:overflow-auto flex flex-col h-full">
-                    <div className="flex-grow">
-                        <Outlet />
-                    </div>
-                    <Footer/>
-                </main>
-            </div>
+            <main className="flex flex-col h-full w-full">
+                <div className="h-full overflow-y-auto">
+                    <Outlet />
+                </div>
+                <Footer/>
+            </main>
         </div>
     );
 }

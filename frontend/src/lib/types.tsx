@@ -12,7 +12,7 @@ export type User = {
 
 export type Profile= {
     username: string;
-    name: string;
+    givenName: string;
     surname: string;
     location: string;
     phone: string;
@@ -64,13 +64,14 @@ export type WorkoutExerciseWithLog = {
 
 export type Message = {
     id: string;
-    sender: string;
-    receiver:string;
+    senderID: number;
+    receiverID: number;
     content: string;
-    timestamp: string;
+    createdAt: string;
 }
 
 export interface UserNavProfileData {
+    id: number;
     username: string;
     isCoach: boolean;
     email: string;

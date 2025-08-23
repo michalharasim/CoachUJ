@@ -12,7 +12,7 @@ type ProfileCardProps = Profile & {
     SecondButton?: React.ReactNode;
 }
 
-const ProfileCard = ({username, name, surname, location, phone, picture, description, OnClick, className, buttonText, SecondButton} : ProfileCardProps) => {
+const ProfileCard = ({username, givenName, surname, location, phone, picture, description, OnClick, className, buttonText, SecondButton} : ProfileCardProps) => {
     return (
         <Card className={`w-full shadow-md shadow-primary gap-1 py-2 ${className || ''}`}>
             <CardTitle className="flex flex-row items-center justify-center gap-2">
@@ -24,7 +24,7 @@ const ProfileCard = ({username, name, surname, location, phone, picture, descrip
                 </Avatar>
                 <div className="flex flex-col gap-1">
                     <CardDescription>@{username}</CardDescription>
-                    <p className="p-0">{name} {surname}</p>
+                    <p className="p-0">{givenName} {surname}</p>
                     <p className="p-0">{location}</p>
                 </div>
             </CardTitle>

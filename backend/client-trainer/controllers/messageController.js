@@ -3,17 +3,18 @@ const ApiError = require('../utils/ApiError');
 const { Op } = require('sequelize');
 
 const getMessages = async (req, res) => {
-    const { senderID, receiverID } = req.query;
+    const { senderID } = req.query;
+    const userId = req.user_id;
 
     try {
-        if (!senderID || !receiverID) {
-            throw new ApiError(400, 'Both senderID and receiverID are required');
+        if (!senderID) {
+            throw new ApiError(400, 'senderID is required');
     }
     const messages = await Message.findAll({
     where: {
         [Op.or]: [
-            { senderID: senderID, receiverID: receiverID },
-            { senderID: receiverID, receiverID: senderID }
+            { senderID: senderID, receiverID: userId },
+            { senderID: userId, receiverID: senderID }
         ]
     },
     order: [['createdAt', 'ASC']]
@@ -29,15 +30,16 @@ const getMessages = async (req, res) => {
 };
 
 const sendMessage = async (req, res) => {
-  const { senderID, receiverID, content } = req.body;
+  const { receiverID, content } = req.body;
+  const userId = req.user_id;
 
   try {
-    if (!senderID || !receiverID || !content) {
-      throw new ApiError(400, 'senderID, receiverID, and content are required');
+    if (!receiverID || !content) {
+      throw new ApiError(400, 'receiverID, and content are required');
     }
 
     const message = await Message.create({
-      senderID,
+      senderID: userId,
       receiverID,
       content
     });

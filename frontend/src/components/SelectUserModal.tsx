@@ -20,11 +20,11 @@ const SelectUserModal = ({isOpen, onClose, onSave, users} : SelectUserModalProps
                     <div key={user.username} className="flex flex-col gap-2">
                         <ProfileCard
                         username={user.username}
-                        name={user.name}
+                        givenName={user.givenName}
                         surname={user.surname}
                         location={""}
                         phone={""}
-                        avatar={user.avatar}
+                        picture={user.picture}
                         description={""}
                         buttonText="Wybierz"
                         OnClick={() => onSave(user.username)}/>

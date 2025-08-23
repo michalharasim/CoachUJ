@@ -75,6 +75,7 @@ const getUserNavProfile = async (req, res) => {
       username: userProfile.username,
       email: req.email,
       isCoach: userProfile.role === "trainer",
+      id: req.user_id,
     }
 
     res.status(200).json(returnData);

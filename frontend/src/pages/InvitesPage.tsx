@@ -81,7 +81,7 @@ const InvitesPage = () => {
                     <ProfileCard
                         key={userProfile.username}
                         username={userProfile.username}
-                        name={userProfile.name}
+                        givenName={userProfile.givenName}
                         surname={userProfile.surname}
                         location={userProfile.location}
                         phone={userProfile.phone}

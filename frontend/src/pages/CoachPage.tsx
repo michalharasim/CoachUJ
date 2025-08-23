@@ -39,7 +39,6 @@ const CoachPage = () => {
             const jsonData : (Profile & { userID: number, isConnected: boolean})[] = response.data;
             const connected = jsonData.filter(coach => coach.isConnected);
             const notConnected = jsonData.filter(coach => !coach.isConnected);
-            console.log(response.data);
             setYourCoaches(connected);
             setAllCoaches(notConnected);
         } catch (error) {
@@ -67,14 +66,14 @@ const CoachPage = () => {
     }, []);
 
     return (
-        <div className="w-full h-full mb-5">
+        <div className="w-full h-full">
             <p className="text-3xl text-center pt-5 text-shadow-primary text-shadow-md">Twoi Trenerzy</p>
             <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,2fr))] gap-5 p-5">
                 {yourCoaches.map((userProfile) => (
                     <ProfileCard
                         key={userProfile.username}
                         username={userProfile.username}
-                        name={userProfile.name}
+                        givenName={userProfile.givenName}
                         surname={userProfile.surname}
                         location={userProfile.location}
                         phone={userProfile.phone}
@@ -91,7 +90,7 @@ const CoachPage = () => {
                     <ProfileCard
                         key={userProfile.username}
                         username={userProfile.username}
-                        name={userProfile.name}
+                        givenName={userProfile.givenName}
                         surname={userProfile.surname}
                         location={userProfile.location}
                         phone={userProfile.phone}

@@ -4,17 +4,17 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {Message} from "@/lib/types";
+import {trainerClientApi} from "@/lib/axios_instance";
+import axios from "axios";
 
 interface ChatInterfaceProps {
-    currentUserId: string;
-    currentUserName: string;
-    conversationPartnerId: string;
+    currentUserId: number;
+    conversationPartnerId: number;
     conversationPartnerName: string;
 }
 
 const ChatInterface  = ({
                                                          currentUserId,
-                                                         currentUserName,
                                                          conversationPartnerId,
                                                          conversationPartnerName,
                                                      }: ChatInterfaceProps) => {
@@ -22,32 +22,56 @@ const ChatInterface  = ({
     const [newMessageContent, setNewMessageContent] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const isInitialLoad = useRef(true);
+
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
     const isOwnMessage = (message: Message) => {
-        return message.sender === currentUserId;
+        return message.senderID === currentUserId;
     }
 
     const fetchMessages = async () => {
         setIsLoading(true);
         try {
-            const url = `/api/messages?conversationId=SMTH`;
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data: Message[] = await response.json();
+            const response = await trainerClientApi.get('/messages', {
+                params: {senderID: conversationPartnerId}
+            });
+
+            const data: Message[] = await response.data;
             const processedMessages = data.map(msg => ({
                 ...msg,
-                isOwnMessage: msg.sender === currentUserId
+                isOwnMessage: isOwnMessage(msg)
             }));
+
             setMessages(processedMessages);
-            scrollToBottom();
+
+            if (isInitialLoad.current && processedMessages.length > 0) {
+                setTimeout(() => {
+                    scrollToBottom();
+                }, 100);
+                isInitialLoad.current = false;
+            }
+
         } catch (error) {
-            console.error("Błąd podczas pobierania wiadomości:", error);
+            // Check if the error is from Axios
+            if (axios.isAxiosError(error)) {
+                // Access the server's response data
+                const responseData = error.response?.data;
+                let errorMessage = 'An unknown fetch messages error occurred.';
+
+                // Check if the response data is an object with an 'error' property
+                if (responseData && typeof responseData === 'object' && 'error' in responseData) {
+                    errorMessage = responseData.error;
+                }
+
+                alert(errorMessage);
+            } else {
+                console.error('Network error:', error);
+                alert("Cannot connect to the server.");
+            }
         } finally {
             setIsLoading(false);
         }
@@ -59,30 +83,32 @@ const ChatInterface  = ({
         }
         setIsLoading(true);
         try {
-            const response = await fetch('/api/messages', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    senderId: currentUserId,
-                    senderName: currentUserName,
-                    receiverId: conversationPartnerId,
-                    content: newMessageContent.trim(),
-                    conversationId: "123",
-                }),
+            const response = await trainerClientApi.post('/messages',{
+                receiverID: conversationPartnerId,
+                content: newMessageContent.trim(),
             });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const newMessage: Message = await response.json();
+            
+            const newMessage: Message = await response.data;
             setMessages(prevMessages => [...prevMessages, { ...newMessage, isOwnMessage: true }]);
             setNewMessageContent('');
             scrollToBottom();
         } catch (error) {
-            console.error("Błąd podczas wysyłania wiadomości:", error);
+            // Check if the error is from Axios
+            if (axios.isAxiosError(error)) {
+                // Access the server's response data
+                const responseData = error.response?.data;
+                let errorMessage = 'An unknown send messages error occurred.';
+
+                // Check if the response data is an object with an 'error' property
+                if (responseData && typeof responseData === 'object' && 'error' in responseData) {
+                    errorMessage = responseData.error;
+                }
+
+                alert(errorMessage);
+            } else {
+                console.error('Network error:', error);
+                alert("Cannot connect to the server.");
+            }
         } finally {
             setIsLoading(false);
         }
@@ -96,33 +122,30 @@ const ChatInterface  = ({
         }
     }, [conversationPartnerId]);
 
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
 
     return (
-        <Card className="w-full h-full flex flex-col">
+        <Card className="w-full max-h-full flex flex-col">
             <CardHeader className="p-4 border-b pb-0 pt-0">
                 <CardTitle className="text-md md:text-xl font-semibold">Czat z {conversationPartnerName}</CardTitle>
             </CardHeader>
-            <CardContent className="flex-grow p-4 overflow-hidden">
+            <CardContent className="flex-grow p-4 overflow-auto">
                 {isLoading && messages.length === 0 ? (
                     <div className="flex justify-center items-center h-full text-gray-500">Ładowanie wiadomości...</div>
                 ) : (
-                    <ScrollArea className="h-full pr-4">
+                    <ScrollArea className="h-full pr-2">
                         {messages.length === 0 && !isLoading ? (
                             <div className="text-sm md:text-md flex justify-center items-center text-muted-foreground">
                                 {`Rozpocznij konwersację z ${conversationPartnerName}.`}
                             </div>
                         ) : (
-                            <div className="flex flex-col space-y-3">
+                            <div className="flex flex-col space-y-2">
                                 {messages.map((msg) => (
                                     <div
                                         key={msg.id}
                                         className={`flex ${isOwnMessage(msg) ? 'justify-end' : 'justify-start'}`}
                                     >
                                         <div
-                                            className={`max-w-[70%] p-3 rounded-lg shadow-sm ${
+                                            className={`max-w-[70%] p-2 rounded-lg shadow-sm ${
                                                 isOwnMessage(msg)
                                                     ? 'bg-primary text-primary-foreground'
                                                     : 'bg-muted text-muted-foreground'
@@ -133,7 +156,7 @@ const ChatInterface  = ({
                                             </p>
                                             <p className="text-sm">{msg.content}</p>
                                             <p className="text-xs text-right opacity-80 mt-1">
-                                                {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </p>
                                         </div>
                                     </div>
