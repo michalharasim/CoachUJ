@@ -3,7 +3,8 @@ const { serverError } = require("../helpers");
 const Exercise = require('../../models/exercise');
 const TrainingPlan = require('../../models/training_plan');
 const PlanExercise = require('../../models/plan_exercise');
-const User = require('../../models/user');
+// const User = require('../../models/user');
+const ClientTrainingPlan = require('../../models/client_training_plan');
 const sequelize = require('../../db');
 
 const getExercise = async (req, res) => {
@@ -41,7 +42,8 @@ const addExercise = async (req, res) => {
     if (req.role !== "trainer") {
         return res.status(401).json({error: 'Access denied'});
     }
-    const { name, description, picture, coachID } = req.body;
+    const { name, description, picture } = req.body;
+    const coachID = req.user_id;
     try {
         const existingExercise = await Exercise.findOne({
             where: {
@@ -117,7 +119,8 @@ const createPlan = async (req, res) => {
     if (req.role !== "trainer") {
         return res.status(401).json({error: 'Access denied'});
     }
-    const { name, coachID, exercises } = req.body;
+    const { name, exercises } = req.body;
+    const coachID = req.user_id;
     const t = await sequelize.transaction();
     try {
         const trainingPlan = await TrainingPlan.create(
@@ -243,15 +246,16 @@ const addPlanToClient = async (req, res) => {
                 id: planID,
             },
         });
-        const client = await User.findOne({
-            where: {
-                id: clientID,
-            },
-        });
-        if (plan === null || client === null) {
+        // const client = await User.findOne({
+        //     where: {
+        //         id: clientID,
+        //     },
+        // });
+        if (plan === null/* || client === null*/) {
             return res.status(404).json({
                 success: false,
-                error: "Plan or client with given id not found",
+                //error: "Plan or client with given id not found",
+                error: "Plan with given id not found",
             });
         }
         await ClientTrainingPlan.create({

@@ -10,7 +10,7 @@ const Exercise = require("./models/exercise");
 const TrainingPlan = require("./models/training_plan");
 const PlanExercise = require("./models/plan_exercise");
 const ClientTrainingPlan = require("./models/client_training_plan");
-const User = require("./models/user");
+// const User = require("./models/user");
 const ClientWorkoutLog = require("./models/client_workout_log");
 
 // TODO: add coachID -> TrainingPlan when coach table is implemented
@@ -27,25 +27,25 @@ PlanExercise.belongsTo(TrainingPlan, {
 });
 TrainingPlan.hasMany(PlanExercise, { foreignKey: "planID" });
 
-ClientTrainingPlan.belongsTo(User, {
-    foreignKey: "clientID",
-    as: "client",
-    allowNull: false,
-});
-User.hasMany(ClientTrainingPlan, { foreignKey: "clientID" });
-ClientTrainingPlan.belongsTo(TrainingPlan, {
-    foreignKey: "planID",
-    as: "plan",
-    allowNull: false,
-});
+// ClientTrainingPlan.belongsTo(User, {
+//     foreignKey: "clientID",
+//     as: "client",
+//     allowNull: false,
+// });
+// User.hasMany(ClientTrainingPlan, { foreignKey: "clientID" });
+// ClientTrainingPlan.belongsTo(TrainingPlan, {
+//     foreignKey: "planID",
+//     as: "plan",
+//     allowNull: false,
+// });
 TrainingPlan.hasMany(ClientTrainingPlan, { foreignKey: "planID" });
 
-ClientWorkoutLog.belongsTo(User, {
-    foreignKey: "clientID",
-    as: "client",
-    allowNull: false,
-});
-User.hasMany(ClientWorkoutLog, { foreignKey: "clientID" });
+// ClientWorkoutLog.belongsTo(User, {
+//     foreignKey: "clientID",
+//     as: "client",
+//     allowNull: false,
+// });
+// User.hasMany(ClientWorkoutLog, { foreignKey: "clientID" });
 ClientWorkoutLog.belongsTo(TrainingPlan, {
     foreignKey: "planID",
     as: "plan",

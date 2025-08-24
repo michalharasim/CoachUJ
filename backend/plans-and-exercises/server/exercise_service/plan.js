@@ -1,7 +1,7 @@
 const { serverError } = require("../helpers");
 const ClientWorkoutLog = require('../../models/client_workout_log');
 const TrainingPlan = require('../../models/training_plan');
-const User = require('../../models/user');
+// const User = require('../../models/user');
 const ClientTrainingPlan = require('../../models/client_training_plan');
 
 const getLogs = async (req, res) => {
@@ -48,15 +48,16 @@ const addLogs = async (req, res) => {
                 id: planID,
             },
         });
-        const client = await User.findOne({
-            where: {
-                id: clientID,
-            },
-        });
-        if (plan === null || client === null) {
+        // const client = await User.findOne({
+        //     where: {
+        //         id: clientID,
+        //     },
+        // });
+        if (plan === null /*|| client === null*/) {
             return res.status(404).json({
                 success: false,
-                error: "Plan or client with given id not found",
+                // error: "Plan or client with given id not found",
+                error: "Plan with given id not found",
             });
         }
 
