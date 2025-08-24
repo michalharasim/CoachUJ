@@ -1,7 +1,15 @@
 const { Sequelize } = require("sequelize");
 const { serverError } = require("../helpers");
+const Exercise = require('../../models/exercise');
+const TrainingPlan = require('../../models/training_plan');
+const PlanExercise = require('../../models/plan_exercise');
+const User = require('../../models/user');
+const sequelize = require('../../db');
 
-async function getExercise(req, res, Exercise) {
+const getExercise = async (req, res) => {
+    if (req.role !== "trainer") {
+        return res.status(401).json({error: 'Access denied'});
+    }
     const id = req.params.id;
     try {
         const exercise = await Exercise.findOne({
@@ -27,9 +35,12 @@ async function getExercise(req, res, Exercise) {
     } catch (error) {
         return serverError(res, "Error on get exercise:", error);
     }
-}
+};
 
-async function addExercise(req, res, Exercise) {
+const addExercise = async (req, res) => {
+    if (req.role !== "trainer") {
+        return res.status(401).json({error: 'Access denied'});
+    }
     const { name, description, picture, coachID } = req.body;
     try {
         const existingExercise = await Exercise.findOne({
@@ -62,9 +73,12 @@ async function addExercise(req, res, Exercise) {
     } catch (error) {
         return serverError(res, "Error during add exercise:", error);
     }
-}
+};
 
-async function getPlan(req, res, TrainingPlan, PlanExercise) {
+const getPlan = async (req, res) => {
+    if (req.role !== "trainer") {
+        return res.status(401).json({error: 'Access denied'});
+    }
     const planID = req.params.id;
     try {
         const trainingPlan = await TrainingPlan.findOne({
@@ -77,22 +91,32 @@ async function getPlan(req, res, TrainingPlan, PlanExercise) {
                 planID: planID,
             }
         });
-        const shortenPlanExercises = planExercises.map(obj => {
-            const {exerciseID, setCount, repCount, breakTime, notes, weight, order} = obj;
-            return {exerciseID, setCount, repCount, breakTime, notes, weight, order};
-        });
-        return res.status(200).json({
-            success: true,
-            name: trainingPlan.name,
-            coachID: trainingPlan.coachID,
-            exercises: shortenPlanExercises,
-        });
+        if (trainingPlan && planExercises) {
+            const shortenPlanExercises = planExercises.map(obj => {
+                const {exerciseID, setCount, repCount, breakTime, notes, weight, order} = obj;
+                return {exerciseID, setCount, repCount, breakTime, notes, weight, order};
+            });
+            return res.status(200).json({
+                success: true,
+                name: trainingPlan.name,
+                coachID: trainingPlan.coachID,
+                exercises: shortenPlanExercises,
+            });
+        } else {
+            return res.status(404).json({
+                success: false,
+                error: "Plan with that id doesnt exist",
+            });
+        }
     } catch (error) {
         return serverError(res, "Error during get plan:", error);
     }
-}
+};
 
-async function createPlan(req, res, TrainingPlan, PlanExercise, Exercise, sequelize) {
+const createPlan = async (req, res) => {
+    if (req.role !== "trainer") {
+        return res.status(401).json({error: 'Access denied'});
+    }
     const { name, coachID, exercises } = req.body;
     const t = await sequelize.transaction();
     try {
@@ -143,9 +167,12 @@ async function createPlan(req, res, TrainingPlan, PlanExercise, Exercise, sequel
         await t.rollback();
         return serverError(res, "Error during create plan:", error);
     }
-}
+};
 
-async function updatePlan(req, res, TrainingPlan, PlanExercise, sequelize) {
+const updatePlan = async (req, res) => {
+    if (req.role !== "trainer") {
+        return res.status(401).json({error: 'Access denied'});
+    }
     const planID = req.params.id;
     const exercises = req.body;
     
@@ -202,9 +229,12 @@ async function updatePlan(req, res, TrainingPlan, PlanExercise, sequelize) {
         await t.rollback();
         return serverError(res, "Error during update plan:", error);
     }
-}
+};
 
-async function addPlanToClient(req, res, ClientTrainingPlan, TrainingPlan, User) {
+const addPlanToClient = async (req, res) => {
+    if (req.role !== "trainer") {
+        return res.status(401).json({error: 'Access denied'});
+    }
     const planID = req.params.plan_id;
     const clientID = req.params.client_id;
     try {
@@ -236,7 +266,7 @@ async function addPlanToClient(req, res, ClientTrainingPlan, TrainingPlan, User)
     } catch (error) {
         return serverError(res, "Error during add plan to client:", error);
     }
-}
+};
 
 module.exports = {
     addExercise,
