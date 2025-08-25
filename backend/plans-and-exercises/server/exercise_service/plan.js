@@ -1,6 +1,10 @@
 const { serverError } = require("../helpers");
+const ClientWorkoutLog = require('../../models/client_workout_log');
+const TrainingPlan = require('../../models/training_plan');
+// const User = require('../../models/user');
+const ClientTrainingPlan = require('../../models/client_training_plan');
 
-async function getLogs(req, res, ClientWorkoutLog) {
+const getLogs = async (req, res) => {
     const planID = parseInt(req.params.plan_id);
     const clientID = parseInt(req.params.client_id);
     try {
@@ -32,9 +36,9 @@ async function getLogs(req, res, ClientWorkoutLog) {
     } catch (error) {
         return serverError(res, "Error on get logs:", error);
     }
-}
+};
 
-async function addLogs(req, res, TrainingPlan, User, ClientWorkoutLog) {
+const addLogs = async (req, res) => {
     const planID = parseInt(req.params.plan_id);
     const clientID = parseInt(req.params.client_id);
     const body = req.body;
@@ -44,15 +48,16 @@ async function addLogs(req, res, TrainingPlan, User, ClientWorkoutLog) {
                 id: planID,
             },
         });
-        const client = await User.findOne({
-            where: {
-                id: clientID,
-            },
-        });
-        if (plan === null || client === null) {
+        // const client = await User.findOne({
+        //     where: {
+        //         id: clientID,
+        //     },
+        // });
+        if (plan === null /*|| client === null*/) {
             return res.status(404).json({
                 success: false,
-                error: "Plan or client with given id not found",
+                // error: "Plan or client with given id not found",
+                error: "Plan with given id not found",
             });
         }
 
@@ -73,10 +78,10 @@ async function addLogs(req, res, TrainingPlan, User, ClientWorkoutLog) {
     } catch (error) {
         return serverError(res, "Error on add logs:", error);
     }
-}
+};
 
-async function getPlan(req, res, ClientTrainingPlan, TrainingPlan) {
-    const clientID = parseInt(req.params.client_id);
+const getPlan = async (req, res) => {
+    const clientID = req.user_id;
     try {
         const clientPlan = await ClientTrainingPlan.findOne({
             where: {
@@ -111,7 +116,7 @@ async function getPlan(req, res, ClientTrainingPlan, TrainingPlan) {
     } catch (error) {
         return serverError(res, "Error on get plan:", error);
     }
-}
+};
 
 module.exports = {
     getLogs,
