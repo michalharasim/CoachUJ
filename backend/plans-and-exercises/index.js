@@ -10,6 +10,8 @@ const Exercise = require("./models/exercise");
 const TrainingPlan = require("./models/training_plan");
 const PlanExercise = require("./models/plan_exercise");
 const ClientTrainingPlan = require("./models/client_training_plan");
+const Category = require("./models/category");
+const ExerciseCategory = require("./models/exercise_category");
 // const User = require("./models/user");
 const ClientWorkoutLog = require("./models/client_workout_log");
 
@@ -46,6 +48,10 @@ TrainingPlan.hasMany(ClientTrainingPlan, { foreignKey: "planID" });
 //     allowNull: false,
 // });
 // User.hasMany(ClientWorkoutLog, { foreignKey: "clientID" });
+
+Exercise.belongsToMany(Category, { through: ExerciseCategory, foreignKey: "exerciseId" });
+Category.belongsToMany(Exercise, { through: ExerciseCategory, foreignKey: "categoryId" });
+
 ClientWorkoutLog.belongsTo(TrainingPlan, {
     foreignKey: "planID",
     as: "plan",
@@ -71,6 +77,10 @@ app.use(cors({
 
 const trainerRoutes = require('./routes/trainer');
 const planRoutes = require('./routes/plan');
+const categoryRoutes = require('./routes/category_routes');
+const path = require("path");
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get("/", async (req, res) => {
     res.send("Hello world!");
@@ -78,6 +88,7 @@ app.get("/", async (req, res) => {
 
 app.use('/api/trainer', trainerRoutes);
 app.use('/api/plan', planRoutes);
+app.use('/api/categories', categoryRoutes);
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);

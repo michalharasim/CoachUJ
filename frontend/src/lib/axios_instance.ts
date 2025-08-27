@@ -44,4 +44,4 @@ const createPublicApi = (baseURL: string): AxiosInstance => {
 // Instancje dla konkretnych serwisów
 export const authApi = createPublicApi('http://localhost:2000');
 export const trainerClientApi = createProtectedApi('http://localhost:2137/api');
-export const plansExercisesApi = createProtectedApi('http://localhost:8080');
+export const plansExercisesApi = createProtectedApi('http://localhost:8080/api');

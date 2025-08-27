@@ -1,16 +1,15 @@
-import {sampleExercises} from "@/lib/example_data";
 import ExerciseDetailsModal from "@/components/workouts/ExerciseDetailsModal";
 import {Tag} from "lucide-react";
 import {Button} from "@/components/ui/button";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import type {Exercise} from "@/lib/types";
-import MyExerciseModal from "@/components/MyExerciseModal";
-import type {ExerciseFormValues} from "@/lib/schemas/ExerciseSchema";
+import MyExerciseModal from "@/components/MyExerciseModal"
+import {plansExercisesApi} from "@/lib/axios_instance";
+import axios from "axios";
 
 const ExercisesPage = () => {
 
-    const myExercises = sampleExercises.filter(exercise => exercise.isMyExercise);
-    const publicExercises = sampleExercises.filter(exercise => !exercise.isMyExercise);
+    const [exercises, setExercises] = useState<Exercise[]>([]);
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [selectedExerciseToEdit, setSelectedExerciseToEdit] = useState<Exercise | undefined>(undefined);
 
@@ -24,9 +23,69 @@ const ExercisesPage = () => {
         setIsFormModalOpen(true);
     };
 
-    const handleSaveExercise = (data: ExerciseFormValues) => {
-        console.log(data);
+    const fetchExercises = async () => {
+        try {
+            const response = await plansExercisesApi.get("trainer/exercises");
+
+            const mappedExercises = response.data.map((ex: any) => ({
+                ...ex,
+                isMyExercise: ex.coachID !== null,
+            }));
+
+            console.log(mappedExercises);
+
+            setExercises(mappedExercises);
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                const responseData = error.response?.data;
+                let errorMessage = "An unknown fetch exercises error occurred.";
+
+                if (responseData && typeof responseData === "object" && "error" in responseData) {
+                    errorMessage = responseData.error;
+                }
+
+                alert(errorMessage);
+            } else {
+                console.error("Network error:", error);
+                alert("Cannot connect to the server.");
+            }
+        }
+    };
+
+    const handleSaveExercise = async (data: FormData) => {
+        try {
+            if(selectedExerciseToEdit){  // update
+                data.append('id', selectedExerciseToEdit.id.toString());
+                await plansExercisesApi.put("trainer/exercise", data);
+            }else { // create
+                await plansExercisesApi.post("trainer/exercise", data);
+            }
+            setIsFormModalOpen(false);
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                const responseData = error.response?.data;
+                let errorMessage = "An unknown create/update exercise error occurred.";
+
+                if (responseData && typeof responseData === "object" && "error" in responseData) {
+                    errorMessage = responseData.error;
+                }
+
+                alert(errorMessage);
+            } else {
+                console.error("Network error:", error);
+                alert("Cannot connect to the server.");
+            }
+        }
+        fetchExercises();
     }
+
+    useEffect(() => {
+        fetchExercises();
+    }, []);
+
+    // filtrowanie
+    const myExercises = exercises.filter(exercise => exercise.isMyExercise !== null);   // prywatne
+    const publicExercises = exercises.filter(exercise => exercise.isMyExercise === null);
 
     return (
         <div className="w-full h-full">
@@ -46,7 +105,7 @@ const ExercisesPage = () => {
                         <span className="semibold text-center">{exercise.name}</span>
                         <span className="text-center flex flex-row gap-2">
                             <Tag />
-                            {exercise.categories.map((category, index) => (
+                            {exercise.categories && exercise.categories.map((category, index) => (
                                 <span className="text-sm font-semibold" key={exercise.name + category.name + index.toString()}>
                                     {category.name}
                                     {index < exercise.categories.length - 1 && ", "}

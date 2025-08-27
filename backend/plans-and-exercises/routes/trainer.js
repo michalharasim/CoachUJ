@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const verifyToken = require('../../Authorization/authMiddleware');
-const { addExercise, getExercise, getPlan, createPlan, updatePlan, addPlanToClient } = require('../server/exercise_service/trainer');
+const { addExercise, getExercise, getExercises, getPlan, createPlan, updatePlan, addPlanToClient, updateExercise } = require('../server/exercise_service/trainer');
+const uploadPicture = require('./../uploadMiddleware');
 
 router.get("/exercise/:id", verifyToken, getExercise);
-router.post("/exercise", verifyToken, addExercise);
+router.post("/exercise", verifyToken, uploadPicture.single('picture'),  addExercise);
+router.put("/exercise", verifyToken, uploadPicture.single('picture'),  updateExercise);
+router.get("/exercises", verifyToken, getExercises);
 router.get("/plan/:id", verifyToken, getPlan);
 router.post("/plan", verifyToken, createPlan);
 router.put("/plan/:id", verifyToken, updatePlan);

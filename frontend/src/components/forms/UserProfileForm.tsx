@@ -102,7 +102,7 @@ const UserProfileForm = ({ currentUser, onSubmit, isLoading } : UserProfileFormP
                     <FormField
                         control={form.control}
                         name="profilePicture"
-                        render={({ field: { onChange, value, ...fieldProps } }) => (
+                        render={({ field: {...fieldProps } }) => (
                             <FormItem>
                                 <FormLabel>Zmień Avatar</FormLabel>
                                 <FormControl>

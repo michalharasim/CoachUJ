@@ -30,12 +30,12 @@ export type WorkoutPlan = {
 }
 
 export type ExerciseCategory = {
-    id: string;
+    id: number;
     name: string;
 }
 
 export type Exercise = {
-    id: string;
+    id: number;
     name: string;
     description: string;
     categories: ExerciseCategory[];

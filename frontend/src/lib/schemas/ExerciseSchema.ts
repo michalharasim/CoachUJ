@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 const exerciseCategorySchema = z.object({
-    id: z.string(),
+    id: z.number(),
     name: z.string(),
 });
 

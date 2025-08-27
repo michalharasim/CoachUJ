@@ -1,8 +1,10 @@
-const { Sequelize } = require("sequelize");
+const { Sequelize, Op} = require("sequelize");
 const { serverError } = require("../helpers");
 const Exercise = require('../../models/exercise');
 const TrainingPlan = require('../../models/training_plan');
 const PlanExercise = require('../../models/plan_exercise');
+const Category = require('../../models/category');
+const ExerciseCategory = require('../../models/exercise_category');
 // const User = require('../../models/user');
 const ClientTrainingPlan = require('../../models/client_training_plan');
 const sequelize = require('../../db');
@@ -14,19 +16,26 @@ const getExercise = async (req, res) => {
     const id = req.params.id;
     try {
         const exercise = await Exercise.findOne({
-            where: {
-                [Sequelize.Op.or]: [ {id} ],
-            }
+            where: { id },
+            include: [
+                {
+                    model: Category,
+                    attributes: ['id', 'name'],
+                    through: { attributes: [] }
+                }
+            ]
         });
         if (exercise) {
-            return res.status(200).json({
-                success: true,
+            const exerciseData = {
                 id: exercise.id,
                 name: exercise.name,
                 description: exercise.description,
                 picture: exercise.picture,
                 coachID: exercise.coachID,
-            });
+                categories: exercise.Categories?.map(c => ({ id: c.id, name: c.name })) || []
+            };
+
+            return res.json(exerciseData);
         } else {
             return res.status(404).json({
                 success: false,
@@ -42,13 +51,11 @@ const addExercise = async (req, res) => {
     if (req.role !== "trainer") {
         return res.status(401).json({error: 'Access denied'});
     }
-    const { name, description, picture } = req.body;
+    const { name, description, categories} = req.body;
     const coachID = req.user_id;
     try {
         const existingExercise = await Exercise.findOne({
-            where: {
-                [Sequelize.Op.or]: [{ name }],
-            }
+            where: { name }
         });
 
         if (existingExercise) {
@@ -58,18 +65,36 @@ const addExercise = async (req, res) => {
             });
         }
 
+        let picturePath = null;
+        if (req.file) {
+            picturePath = `/uploads/${req.file.filename}`;
+        }
+
         const newExercise = await Exercise.create({
             name,
             description,
-            picture,
+            picture: picturePath,
             coachID,
         });
+
+        // powiązane kategorie
+        if (categories) {
+            const categoryIds = Array.isArray(categories) ? categories : [categories];
+
+            const exerciseCategories = categoryIds.map(id => ({
+                exerciseId: newExercise.id,
+                categoryId: Number(id), // konwertujemy na number
+            }));
+
+            await ExerciseCategory.bulkCreate(exerciseCategories);
+        }
+
         return res.status(201).json({
             success: true,
             id: newExercise.id,
             name: name,
             description: description,
-            picture: picture,
+            picture: picturePath ,
             coachID: coachID,
         });
     } catch (error) {
@@ -272,6 +297,111 @@ const addPlanToClient = async (req, res) => {
     }
 };
 
+const getExercises = async (req, res) => {
+    try {
+        const coachID = req.user_id;
+
+        const exercises = await Exercise.findAll({
+            where: {
+                [Op.or]: [
+                    { coachID: null },       // globalne ćwiczenia
+                    { coachID: coachID }     // prywatne tego coacha
+                ]
+            },
+            include: [
+                {
+                    model: Category,
+                    attributes: ['id', 'name'],
+                    through: { attributes: [] }
+                }
+            ]
+        });
+
+        const result = exercises.map(ex => ({
+            id: ex.id,
+            name: ex.name,
+            description: ex.description,
+            picture: ex.picture,
+            coachID: ex.coachID,
+            categories: ex.Categories?.map(c => ({ id: c.id, name: c.name })) || []
+        }));
+
+        res.json(result);
+    } catch (error) {
+        console.error("Error fetching exercises:", error);
+        res.status(500).json({ error: "Nie udało się pobrać ćwiczeń" });
+    }
+};
+
+const updateExercise = async (req, res) => {
+    if (req.role !== "trainer") {
+        return res.status(401).json({ error: 'Access denied' });
+    }
+
+    const { id, name, description, categories } = req.body;
+    console.log(id, name, description, categories);
+    if (!id) {
+        return res.status(400).json({ error: "Exercise ID is required" });
+    }
+
+    try {
+        const exercise = await Exercise.findOne({ where: { id } });
+
+        if (!exercise) {
+            return res.status(404).json({ error: "Exercise not found" });
+        }
+
+        // Aktualizacja pól
+        exercise.name = name ?? exercise.name;
+        exercise.description = description ?? exercise.description;
+
+        if (req.file) {
+            exercise.picture = `/uploads/${req.file.filename}`;
+        }
+
+        await exercise.save();
+
+        // Aktualizacja kategorii
+        if (Array.isArray(categories)) {
+            const exerciseId = id;
+
+            // Usuń stare powiązania
+            await ExerciseCategory.destroy({ where: { exerciseId } });
+
+            // Dodaj nowe powiązania
+            const exerciseCategories = categories.map(catID => ({
+                exerciseId,
+                categoryId: catID,
+            }));
+
+            await ExerciseCategory.bulkCreate(exerciseCategories);
+        }
+
+        // Zwracamy zmapowane dane
+        const updatedExercise = await Exercise.findOne({
+            where: { id },
+            include: [{ model: Category, attributes: ['id', 'name'], through: { attributes: [] } }]
+        });
+
+        const response = {
+            id: updatedExercise.id,
+            name: updatedExercise.name,
+            description: updatedExercise.description,
+            picture: updatedExercise.picture,
+            coachID: updatedExercise.coachID,
+            categories: updatedExercise.Categories?.map(c => ({ id: c.id, name: c.name })) || []
+        };
+
+        return res.json({ success: true, exercise: response });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Error updating exercise" });
+    }
+};
+
+module.exports = updateExercise;
+
+
 module.exports = {
     addExercise,
     getExercise,
@@ -279,4 +409,6 @@ module.exports = {
     getPlan,
     updatePlan,
     addPlanToClient,
+    getExercises,
+    updateExercise,
 };
