@@ -103,9 +103,6 @@ const addExercise = async (req, res) => {
 };
 
 const getPlan = async (req, res) => {
-    if (req.role !== "trainer") {
-        return res.status(401).json({error: 'Access denied'});
-    }
     const planID = req.params.id;
     try {
         const trainingPlan = await TrainingPlan.findOne({
