@@ -400,6 +400,25 @@ const updateExercise = async (req, res) => {
     }
 };
 
+const getTrainerPlans = async (req, res) => {
+    if (req.role !== "trainer") {
+        return res.status(401).json({ error: 'Access denied' });
+    }
+    const coachID = req.user_id;
+    try {
+        const plans = await TrainingPlan.findAll({
+            where: { coachID },
+            attributes: ['id', 'name', 'coachID']
+        });
+        return res.status(200).json({
+            success: true,
+            plans
+        });
+    } catch (error) {
+        return serverError(res, "Error fetching trainer plans:", error);
+    }
+};
+
 module.exports = updateExercise;
 
 
@@ -412,4 +431,5 @@ module.exports = {
     addPlanToClient,
     getExercises,
     updateExercise,
+    getTrainerPlans,
 };
