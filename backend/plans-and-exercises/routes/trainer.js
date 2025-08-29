@@ -9,6 +9,10 @@ router.post("/exercise", verifyToken, uploadPicture.single('picture'),  addExerc
 router.put("/exercise", verifyToken, uploadPicture.single('picture'),  updateExercise);
 router.get("/exercises", verifyToken, getExercises);
 router.get("/plan/:id", verifyToken, getPlan);
+
+// TODO! Get all trainer plans
+router.get("/plans", verifyToken, getPlans);
+
 router.post("/plan", verifyToken, createPlan);
 router.put("/plan/:id", verifyToken, updatePlan);
 router.post("/plan/:plan_id/:client_id", verifyToken, addPlanToClient);

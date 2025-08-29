@@ -7,8 +7,8 @@ import {Button} from "@/components/ui/button";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {sampleExercises} from "@/lib/example_data";
 import {MinusCircle} from "lucide-react";
+import useFetchExercises from "@/custom_hooks/fetch_exercises";
 
 type WorkoutPlanFormProps = {
     currentPlan?: WorkoutPlan;
@@ -30,7 +30,7 @@ const WorkoutPlanForm = ({currentPlan, onSubmit}: WorkoutPlanFormProps) => {
         mode: "onBlur"
     })
 
-    const availableExercisesOptions = sampleExercises;
+    const { exercises } = useFetchExercises();
 
     const { fields, append, remove } = useFieldArray({
         control: form.control,
@@ -38,8 +38,7 @@ const WorkoutPlanForm = ({currentPlan, onSubmit}: WorkoutPlanFormProps) => {
     });
 
     const handleAddExercise = (exerciseId: string) => {
-        const selectedExercise = sampleExercises.find(ex => ex.id === exerciseId);
-
+        const selectedExercise = exercises.find(ex => ex.id === Number(exerciseId));
         if (selectedExercise) {
             append({
                 exercise: selectedExercise,
@@ -97,10 +96,10 @@ const WorkoutPlanForm = ({currentPlan, onSubmit}: WorkoutPlanFormProps) => {
                             <SelectValue placeholder="Wybierz ćwiczenie do dodania" />
                         </SelectTrigger>
                         <SelectContent>
-                            {availableExercisesOptions
-                                .filter(ex  => !fields.some(selected => selected.id === ex.id))
+                            {exercises
+                                .filter(ex  => !fields.some(selected => selected.exercise.id === ex.id))
                                 .map((exercise) => (
-                                    <SelectItem key={exercise.id} value={exercise.id}>
+                                    <SelectItem key={exercise.id} value={String(exercise.id)}>
                                         {exercise.name}
                                     </SelectItem>
                                 ))}

@@ -21,7 +21,7 @@ export type Profile= {
 }
 
 export type WorkoutPlan = {
-    id: string;
+    id: number;
     name: string;
     date: string,
     author: Profile;

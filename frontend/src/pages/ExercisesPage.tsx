@@ -1,15 +1,16 @@
 import ExerciseDetailsModal from "@/components/workouts/ExerciseDetailsModal";
 import {Tag} from "lucide-react";
 import {Button} from "@/components/ui/button";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import type {Exercise} from "@/lib/types";
 import MyExerciseModal from "@/components/MyExerciseModal"
 import {plansExercisesApi} from "@/lib/axios_instance";
 import axios from "axios";
+import useFetchExercises from "@/custom_hooks/fetch_exercises";
 
 const ExercisesPage = () => {
 
-    const [exercises, setExercises] = useState<Exercise[]>([]);
+    const { exercises, refetch: refetch_exercises } = useFetchExercises();
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [selectedExerciseToEdit, setSelectedExerciseToEdit] = useState<Exercise | undefined>(undefined);
 
@@ -23,34 +24,6 @@ const ExercisesPage = () => {
         setIsFormModalOpen(true);
     };
 
-    const fetchExercises = async () => {
-        try {
-            const response = await plansExercisesApi.get("trainer/exercises");
-
-            const mappedExercises = response.data.map((ex: any) => ({
-                ...ex,
-                isMyExercise: ex.coachID !== null,
-            }));
-
-            console.log(mappedExercises);
-
-            setExercises(mappedExercises);
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                const responseData = error.response?.data;
-                let errorMessage = "An unknown fetch exercises error occurred.";
-
-                if (responseData && typeof responseData === "object" && "error" in responseData) {
-                    errorMessage = responseData.error;
-                }
-
-                alert(errorMessage);
-            } else {
-                console.error("Network error:", error);
-                alert("Cannot connect to the server.");
-            }
-        }
-    };
 
     const handleSaveExercise = async (data: FormData) => {
         try {
@@ -76,12 +49,8 @@ const ExercisesPage = () => {
                 alert("Cannot connect to the server.");
             }
         }
-        fetchExercises();
+        refetch_exercises();
     }
-
-    useEffect(() => {
-        fetchExercises();
-    }, []);
 
     // filtrowanie
     const myExercises = exercises.filter(exercise => exercise.isMyExercise !== null);   // prywatne

@@ -144,6 +144,7 @@ const createPlan = async (req, res) => {
     if (req.role !== "trainer") {
         return res.status(401).json({error: 'Access denied'});
     }
+    console.log(req.body);
     const { name, exercises } = req.body;
     const coachID = req.user_id;
     const t = await sequelize.transaction();

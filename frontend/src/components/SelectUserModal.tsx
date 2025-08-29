@@ -4,9 +4,9 @@ import ProfileCard from "@/components/ProfileCard";
 
 type SelectUserModalProps = {
     isOpen: boolean;
-    users: Profile[];
+    users: (Profile & { userID: number})[];
     onClose: () => void;
-    onSave: (username: string) => void;
+    onSave: (userID: number) => void;
 };
 
 const SelectUserModal = ({isOpen, onClose, onSave, users} : SelectUserModalProps) => {
@@ -27,7 +27,7 @@ const SelectUserModal = ({isOpen, onClose, onSave, users} : SelectUserModalProps
                         picture={user.picture}
                         description={""}
                         buttonText="Wybierz"
-                        OnClick={() => onSave(user.username)}/>
+                        OnClick={() => onSave(user.id)}/>
                     </div>
                 ))}
             </DialogContent>
