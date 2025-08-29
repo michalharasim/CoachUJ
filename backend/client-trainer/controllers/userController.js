@@ -88,27 +88,26 @@ const getUserNavProfile = async (req, res) => {
   }
 };
 
-
 const getUserProfile = async (req, res) => {
-  const requestingUserId = req.user_id;
+  let requestingUserId;
+  if (req.params.userID) {
+    requestingUserId = req.params.userID;
+  } else {
+    requestingUserId = req.user_id;
+  }
 
   try {
     const user = await User.findOne({
       where: {
         userID: requestingUserId,
-      },
+      },attributes: ['userID', 'username', 'picture', "givenName", "surname" ]
     });
 
     if (!user) {
       throw new ApiError(404, 'User not found');
     }
 
-    // Transform sequelize object to insert email
-    const userProfile = user.get({ plain: true });
-    userProfile.email = req.email;
-    userProfile.isCoach = userProfile.role === 'trainer';
-
-    res.status(200).json(userProfile);
+    res.status(200).json(user);
   } catch (error) {
     if (error instanceof ApiError) {
       res.status(error.statusCode).json({ error: error.message });

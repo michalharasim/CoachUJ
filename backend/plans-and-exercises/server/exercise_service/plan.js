@@ -6,7 +6,7 @@ const ClientTrainingPlan = require('../../models/client_training_plan');
 
 const getLogs = async (req, res) => {
     const planID = parseInt(req.params.plan_id);
-    const clientID = parseInt(req.params.client_id);
+    const clientID = req.user_id;
     try {
         const clientWorkoutLogs = await ClientWorkoutLog.findAll({
             where: {
@@ -118,8 +118,46 @@ const getPlan = async (req, res) => {
     }
 };
 
+const getClientPlans = async (req, res) => {
+    if (req.role !== "client") {
+        return res.status(401).json({ error: 'Access denied' });
+    }
+    const clientID = req.user_id;
+    try {
+        const plans = await ClientTrainingPlan.findAll({
+            where: { clientID },
+            include: [
+                {
+                    model: TrainingPlan,
+                    as: "plan",
+                    attributes: ["id", "name", "coachID"],
+                },
+            ],
+            attributes: ["createdAt"], // data przypisania klientowi
+        });
+
+        const flatPlans = plans.map(p => {
+            const plain = p.get({ plain: true });
+            return {
+                id: plain.plan.id,
+                name: plain.plan.name,
+                coachID: plain.plan.coachID,
+                date: plain.createdAt,
+            };
+        });
+
+        return res.status(200).json({
+            success: true,
+            plans: flatPlans
+        });
+    } catch (error) {
+        return serverError(res, "Error fetching trainer plans:", error);
+    }
+}
+
 module.exports = {
     getLogs,
     addLogs,
     getPlan,
+    getClientPlans,
 }

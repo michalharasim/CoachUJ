@@ -7,8 +7,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getName(user: Profile): string{
-  if(user.name && user.surname){
-    return user.name + " " + user.surname;
+  if(user.givenName && user.surname){
+    return user.givenName + " " + user.surname;
   }else{
     return user.username;
   }

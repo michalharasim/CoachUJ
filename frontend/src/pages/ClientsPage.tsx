@@ -6,13 +6,12 @@ import axios from "axios";
 import useFetchClients from "@/custom_hooks/fetch_clients";
 
 const ClientsPage = () => {
-    const { clients } = useFetchClients();
+    const { clients, refetch } = useFetchClients();
 
     const deleteConnection = async (id: number) => {
         try {
             trainerClientApi.delete(`/connections/${id}`);
-
-            fetchClients()
+            refetch()
         } catch (error) {
             // Check if the error is from Axios
             if (axios.isAxiosError(error)) {

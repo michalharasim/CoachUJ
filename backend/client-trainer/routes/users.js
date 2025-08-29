@@ -8,5 +8,8 @@ router.patch('/profile/update', verifyToken, uploadPicture.single('profilePictur
 router.post('/sync', syncUserFromAuthorization);
 router.get('/profile', verifyToken, getUserProfile);
 router.get('/profile/nav', verifyToken, getUserNavProfile);
+router.get('/profile/:userID', verifyToken, (req, res) => {
+    return getUserProfile(req, res);
+});
 
 module.exports = router;

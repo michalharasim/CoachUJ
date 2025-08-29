@@ -29,11 +29,13 @@ PlanExercise.belongsTo(TrainingPlan, {
 });
 TrainingPlan.hasMany(PlanExercise, { foreignKey: "planID" });
 
-// ClientTrainingPlan.belongsTo(User, {
-//     foreignKey: "clientID",
-//     as: "client",
-//     allowNull: false,
-// });
+ClientTrainingPlan.belongsTo(TrainingPlan, {
+    foreignKey: "planID",
+    as: "plan",
+    allowNull: false,
+});
+TrainingPlan.hasMany(ClientTrainingPlan, { foreignKey: "planID" });
+
 // User.hasMany(ClientTrainingPlan, { foreignKey: "clientID" });
 // ClientTrainingPlan.belongsTo(TrainingPlan, {
 //     foreignKey: "planID",
