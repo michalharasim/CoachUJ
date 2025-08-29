@@ -16,7 +16,6 @@ const useFetchExercises = () => {
                 ...ex,
                 isMyExercise: ex.coachID !== null,
             }));
-
             setExercises(mappedExercises);
         } catch (err) {
             if (axios.isAxiosError(err)) {

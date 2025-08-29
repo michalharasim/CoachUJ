@@ -1,22 +1,22 @@
-import {type WorkoutPlan} from "@/lib/types";
+import {type fetchedWorkoutPlanInfo}  from "@/pages/PlansPage";
 import {Button} from "@/components/ui/button";
 
 type PlanCardProps = {
-    workout: WorkoutPlan;
+    plan: fetchedWorkoutPlanInfo;
     onClick: (x: any) => void;
     onButtonClick: () => void;
 }
 
-const PlanCard = ({ workout, onClick, onButtonClick}: PlanCardProps) => {
+const PlanCard = ({ plan, onClick, onButtonClick}: PlanCardProps) => {
     return (
         <div
             onClick={onClick}
             className="bg-card rounded-lg shadow-sm shadow-primary p-4 cursor-pointer hover:shadow-lg transition-shadow duration-300 flex flex-col gap-2"
         >
             <div className="flex flex-col h-full gap-2 items-center justify-between">
-                <h3 className="font-semibold text-sm lg:text-md text-center">{workout.name}</h3>
+                <h3 className="font-semibold text-sm lg:text-md text-center">{plan.name}</h3>
                 <p className="text-card-foreground text-sm">
-                    {new Date(workout.date).toLocaleDateString('pl-PL')}
+                    {new Date(plan.date).toLocaleDateString('pl-PL')}
                 </p>
                 <Button className="cursor-pointer w-full" onClick={(e) => {
                     e.stopPropagation();

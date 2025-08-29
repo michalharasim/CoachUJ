@@ -27,7 +27,7 @@ const SelectUserModal = ({isOpen, onClose, onSave, users} : SelectUserModalProps
                         picture={user.picture}
                         description={""}
                         buttonText="Wybierz"
-                        OnClick={() => onSave(user.id)}/>
+                        OnClick={() => onSave(user.userID)}/>
                     </div>
                 ))}
             </DialogContent>

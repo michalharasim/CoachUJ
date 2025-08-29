@@ -1,5 +1,4 @@
 import {type WorkoutPlanFormInput, type WorkoutPlanFormValues, workoutPlanSchema} from "@/lib/schemas/WorkoutPlanSchema";
-import type {WorkoutPlan} from "@/lib/types";
 import {useFieldArray, useForm} from "react-hook-form";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Textarea} from "@/components/ui/textarea";
@@ -7,28 +6,50 @@ import {Button} from "@/components/ui/button";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {MinusCircle} from "lucide-react";
+import {Loader2, MinusCircle} from "lucide-react";
 import useFetchExercises from "@/custom_hooks/fetch_exercises";
+import {useEffect, useState} from "react";
+import {plansExercisesApi} from "@/lib/axios_instance";
 
 type WorkoutPlanFormProps = {
-    currentPlan?: WorkoutPlan;
+    currentPlanId?: number;
     onSubmit: (workoutPlanData: WorkoutPlanFormValues) => void;
 };
 
-const WorkoutPlanForm = ({currentPlan, onSubmit}: WorkoutPlanFormProps) => {
+const transformBackendDataToForm = (backendData: any) => {
+    const exercisesCount = backendData.exercises.length;
+    const orderedArray = new Array(exercisesCount).fill(null);
+
+    for (const ex of backendData.exercises) {
+        orderedArray[ex.order] = {
+            breakTime: ex.breakTime,
+            exercise: {
+                id: ex.exerciseID,
+                name: ex.name,
+            },
+            reps: ex.repCount || "",
+            weight: ex.weight || "",
+        }
+    }
+    return {
+        name: backendData.name,
+        note: backendData.note || "",
+        exercises: orderedArray,
+    };
+};
+
+const WorkoutPlanForm = ({currentPlanId, onSubmit}: WorkoutPlanFormProps) => {
+    const [isLoading, setIsLoading] = useState(false);
+
     const form = useForm<WorkoutPlanFormInput, any, WorkoutPlanFormValues>({
         resolver: zodResolver(workoutPlanSchema),
         defaultValues: {
-            name: currentPlan?.name || "",
-            exercises: currentPlan?.exercises.map(ex => ({
-                ...ex,
-                reps: Array.isArray(ex.reps) ? ex.reps.join(' ') : ex.reps || "",
-                weight: Array.isArray(ex.weight) ? ex.weight.join(' ') : ex.weight || "",
-            })) || [],
-            note: currentPlan?.note || "",
-        },
+                name: "",
+                note: "",
+                exercises: [],
+            },
         mode: "onBlur"
-    })
+    });
 
     const { exercises } = useFetchExercises();
 
@@ -36,6 +57,24 @@ const WorkoutPlanForm = ({currentPlan, onSubmit}: WorkoutPlanFormProps) => {
         control: form.control,
         name: "exercises",
     });
+
+    useEffect(() => {
+        if (currentPlanId) {
+            const fetchPlan = async () => {
+                setIsLoading(true);
+                try {
+                    const response = await plansExercisesApi.get(`/trainer/plan/${currentPlanId}`);
+                    const transformedData = transformBackendDataToForm(response.data);
+                    form.reset(transformedData); // Użycie `reset` do wypełnienia formularza
+                } catch (error) {
+                    console.error("Failed to fetch workout plan:", error);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+            fetchPlan();
+        }
+    }, [currentPlanId, form]);
 
     const handleAddExercise = (exerciseId: string) => {
         const selectedExercise = exercises.find(ex => ex.id === Number(exerciseId));
@@ -49,6 +88,13 @@ const WorkoutPlanForm = ({currentPlan, onSubmit}: WorkoutPlanFormProps) => {
         }
     };
 
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-full">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            </div>
+        );
+    }
 
     return (
         <Form {...form}>
@@ -179,7 +225,7 @@ const WorkoutPlanForm = ({currentPlan, onSubmit}: WorkoutPlanFormProps) => {
                 </div>
                 <div className="flex justify-end gap-2">
                     <Button type="submit" className="cursor-pointer">
-                        {currentPlan ? "Zapisz Zmiany" : "Dodaj Plan Treningowy"}
+                        {currentPlanId ? "Zapisz Zmiany" : "Dodaj Plan Treningowy"}
                     </Button>
                 </div>
             </form>

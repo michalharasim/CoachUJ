@@ -41,7 +41,6 @@ TrainingPlan.hasMany(PlanExercise, { foreignKey: "planID" });
 //     allowNull: false,
 // });
 TrainingPlan.hasMany(ClientTrainingPlan, { foreignKey: "planID" });
-
 // ClientWorkoutLog.belongsTo(User, {
 //     foreignKey: "clientID",
 //     as: "client",

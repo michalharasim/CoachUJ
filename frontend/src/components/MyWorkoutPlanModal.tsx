@@ -1,12 +1,12 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import React from "react";
-import {type WorkoutPlan} from "@/lib/types";
 import {type WorkoutPlanFormValues} from "@/lib/schemas/WorkoutPlanSchema";
 import WorkoutPlanForm from "@/components/forms/WorkoutPlanForm";
+import {type fetchedWorkoutPlanInfo} from "@/pages/PlansPage";
 
 type WorkoutPlanFormModalProps = {
     isOpen: boolean;
-    workoutPlan?: WorkoutPlan;
+    workoutPlan?: fetchedWorkoutPlanInfo;
     onClose: () => void;
     onSave: (data: WorkoutPlanFormValues) => void;
 };
@@ -23,7 +23,7 @@ const MyWorkoutPlanModal: React.FC<WorkoutPlanFormModalProps> = ({ isOpen, onClo
                         {isEditing ? "Zaktualizuj dane planu treningowego." : "Wypełnij pola, aby dodać nowy plan treningowy."}
                     </DialogDescription>
                 </DialogHeader>
-                <WorkoutPlanForm currentPlan={workoutPlan} onSubmit={onSave} />
+                <WorkoutPlanForm currentPlanId={workoutPlan?.id} onSubmit={onSave} />
             </DialogContent>
         </Dialog>
     );

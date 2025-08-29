@@ -1,12 +1,16 @@
 import { z } from 'zod';
-import {exerciseSchema} from "@/lib/schemas/ExerciseSchema";
+
+const planExerciseSchema = z.object({
+    id: z.number(),
+    name: z.string(),
+});
 
 export const workoutPlanSchema = z.object({
     name: z.string()
         .min(2, "Nazwa planu musi mieć przynajmniej 2 znaki.")
         .max(255, "Nazwa planu nie może mieć więcej niż 255 znaków."),
     exercises: z.array(z.object({
-        exercise: exerciseSchema,
+        exercise: planExerciseSchema,
         breakTime: z.number().min(0, "Czas przerwy nie może być ujemny"),
         weight: z.string()
             .min(1, "Ciężar nie może być pusty.")

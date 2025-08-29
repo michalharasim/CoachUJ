@@ -24,7 +24,7 @@ export type WorkoutPlan = {
     id: number;
     name: string;
     date: string,
-    author: Profile;
+    author: Profile | null;
     exercises: WorkoutExercise[];
     note: string;
 }

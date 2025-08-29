@@ -11,7 +11,10 @@ const TrainingPlan = sequelize.define("TrainingPlan", {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    // TODO: remove it when coach table is implemented, move to index.js
+    note: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
     coachID: {
         type: DataTypes.INTEGER,
         allowNull: false,

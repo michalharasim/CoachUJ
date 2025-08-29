@@ -118,10 +118,16 @@ const getPlan = async (req, res) => {
                 planID: planID,
             }
         });
+        const allExercises = await Exercise.findAll();
         if (trainingPlan && planExercises) {
             const shortenPlanExercises = planExercises.map(obj => {
                 const {exerciseID, setCount, repCount, breakTime, notes, weight, order} = obj;
-                return {exerciseID, setCount, repCount, breakTime, notes, weight, order};
+
+                const foundExercise = allExercises.find(ex => ex.id === exerciseID);
+
+                const name = foundExercise ? foundExercise.name : '';
+
+                return {exerciseID, setCount, repCount, breakTime, notes, weight, order, name};
             });
             return res.status(200).json({
                 success: true,
@@ -144,8 +150,7 @@ const createPlan = async (req, res) => {
     if (req.role !== "trainer") {
         return res.status(401).json({error: 'Access denied'});
     }
-    console.log(req.body);
-    const { name, exercises } = req.body;
+    const { name, exercises, note } = req.body;
     const coachID = req.user_id;
     const t = await sequelize.transaction();
     try {
@@ -153,6 +158,7 @@ const createPlan = async (req, res) => {
             {
                 name: name,
                 coachID: coachID,
+                note: note,
             },
             { transaction: t },
         );
@@ -160,14 +166,14 @@ const createPlan = async (req, res) => {
         for (e of exercises) {
             const exercise = await Exercise.findOne({
                 where: {
-                    id: e.exerciseID,
+                    id: e.exercise.id,
                 }
             });
             if (exercise === null) {
                 await t.rollback();
                 return res.status(404).json({
                     success: false,
-                    error: `Exercise with id ${e.exerciseID} doesnt exist`,
+                    error: `Exercise with id ${e.exercise.id} doesnt exist`,
                 })
             }
 
@@ -180,7 +186,7 @@ const createPlan = async (req, res) => {
                     weight: e.weight,
                     order: e.order,
                     planID: trainingPlanID,
-                    exerciseID: e.exerciseID,
+                    exerciseID: e.exercise.id,
                 },
                 { transaction: t },
             );
@@ -203,14 +209,7 @@ const updatePlan = async (req, res) => {
         return res.status(401).json({error: 'Access denied'});
     }
     const planID = req.params.id;
-    const exercises = req.body;
-    
-    if (!Array.isArray(exercises) || exercises.length === 0) {
-        return res.status(400).json({
-            success: false,
-            error: 'Request body must be a non-empty array of exercise updates.'
-        });
-    }
+    const {exercises, note, name} = req.body;
 
     const t = await sequelize.transaction();
     try {
@@ -227,28 +226,61 @@ const updatePlan = async (req, res) => {
             })
         }
 
+        await plan.update({
+            name: name ?? plan.name,
+            note: note ?? plan.note,
+        }, {transaction: t});
+
+        const existingPlanExercises = await PlanExercise.findAll({
+            where: { planID: planID },
+            transaction: t,
+        });
+        const incomingExerciseIds = new Set(exercises.map(e => e.exercise.id));
+
         for (const e of exercises) {
-            if (e.exerciseID === undefined || e.exerciseID === null) {
+            if (e.exercise.id === undefined || e.exercise.id  === null) {
                 await t.rollback();
                 return res.status(400).json({
                     success: false,
                     error: 'Each update object must contain an "exerciseID" field.'
                 });
             }
-            const {exerciseID, ...fields} = e;
-            const [rowsAffected, updatedExercises] = await PlanExercise.update(fields, {
+            const existingRecord = await PlanExercise.findOne({
                 where: {
                     planID: planID,
-                    exerciseID: exerciseID,
+                    exerciseID: e.exercise.id ,
                 },
-                returning: true,
-                transaction: t,
+                transaction: t
             });
 
-            if (rowsAffected !== 0) {
-                updatedRecords += 1;
+            const commonFields = {
+                setCount: e.setCount,
+                repCount: e.repCount,
+                weight: e.weight,
+                breakTime: e.breakTime,
+                order: e.order,
+            };
+
+            if (existingRecord) {
+                // Rekord istnieje, więc go aktualizujemy
+                await existingRecord.update(commonFields, { transaction: t });
+            } else {
+                // Rekord nie istnieje, więc go tworzymy
+                await PlanExercise.create({
+                    ...commonFields,
+                    planID: planID,
+                    exerciseID: e.exercise.id,
+                }, { transaction: t });
             }
         }
+
+        // Pętla do usuwania rekordów, które zostały usunięte z planu na froncie
+        for (const existingExercise of existingPlanExercises) {
+            if (!incomingExerciseIds.has(existingExercise.exerciseID)) {
+                await existingExercise.destroy({ transaction: t });
+            }
+        }
+
         await t.commit();
         return res.status(200).json({
             success: true,
@@ -262,34 +294,36 @@ const updatePlan = async (req, res) => {
 
 const addPlanToClient = async (req, res) => {
     if (req.role !== "trainer") {
-        return res.status(401).json({error: 'Access denied'});
+        return res.status(401).json({ error: 'Access denied' });
     }
+
     const planID = req.params.plan_id;
     const clientID = req.params.client_id;
+    const trainerID = req.user_id;
+
     try {
         const plan = await TrainingPlan.findOne({
             where: {
                 id: planID,
+                coachID: trainerID,
             },
         });
-        // const client = await User.findOne({
-        //     where: {
-        //         id: clientID,
-        //     },
-        // });
-        if (plan === null/* || client === null*/) {
+
+        if (!plan) {
             return res.status(404).json({
                 success: false,
-                //error: "Plan or client with given id not found",
-                error: "Plan with given id not found",
+                error: "Plan not found or does not belong to this trainer",
             });
         }
+
         await ClientTrainingPlan.create({
             planID: planID,
             clientID: clientID,
         });
+
         return res.status(201).json({
             success: true,
+            message: "Plan successfully added to client",
             planID: planID,
             clientID: clientID,
         });
@@ -408,8 +442,14 @@ const getTrainerPlans = async (req, res) => {
     try {
         const plans = await TrainingPlan.findAll({
             where: { coachID },
-            attributes: ['id', 'name', 'coachID']
+            attributes: ['id', 'name', 'coachID', 'createdAt'],
+            raw: true
         });
+
+        for (let plan of plans) {
+            plan.date = plan.createdAt;
+        }
+
         return res.status(200).json({
             success: true,
             plans
