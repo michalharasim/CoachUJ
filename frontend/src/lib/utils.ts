@@ -23,3 +23,24 @@ export function formatSecondsToMinutesAndSeconds(totalSeconds: number): string {
   return `${minutes}:${formattedSeconds}`;
 }
 
+export const transformBackendDataToForm = (backendData: any) => {
+  const exercisesCount = backendData.exercises.length;
+  const orderedArray = new Array(exercisesCount).fill(null);
+
+  for (const ex of backendData.exercises) {
+    orderedArray[ex.order] = {
+      breakTime: ex.breakTime,
+      exercise: {
+        id: ex.exerciseID,
+        name: ex.name,
+      },
+      reps: ex.repCount || "",
+      weight: ex.weight || "",
+    }
+  }
+  return {
+    name: backendData.name,
+    note: backendData.note || "",
+    exercises: orderedArray,
+  };
+};

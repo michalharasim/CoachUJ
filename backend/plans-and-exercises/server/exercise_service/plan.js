@@ -21,7 +21,6 @@ const getLogs = async (req, res) => {
             });
         }
 
-        console.log(`length = ${clientWorkoutLogs.length}`);
         const shortenWorkoutLogs = clientWorkoutLogs.map(obj => {
             const {actualSteps, actualReps, breakTime, notes, actualWeight} = obj;
             return {actualSteps, actualReps, breakTime, notes, actualWeight};

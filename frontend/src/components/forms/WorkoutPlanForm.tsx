@@ -10,32 +10,11 @@ import {Loader2, MinusCircle} from "lucide-react";
 import useFetchExercises from "@/custom_hooks/fetch_exercises";
 import {useEffect, useState} from "react";
 import {plansExercisesApi} from "@/lib/axios_instance";
+import {transformBackendDataToForm} from "@/lib/utils";
 
 type WorkoutPlanFormProps = {
     currentPlanId?: number;
     onSubmit: (workoutPlanData: WorkoutPlanFormValues) => void;
-};
-
-const transformBackendDataToForm = (backendData: any) => {
-    const exercisesCount = backendData.exercises.length;
-    const orderedArray = new Array(exercisesCount).fill(null);
-
-    for (const ex of backendData.exercises) {
-        orderedArray[ex.order] = {
-            breakTime: ex.breakTime,
-            exercise: {
-                id: ex.exerciseID,
-                name: ex.name,
-            },
-            reps: ex.repCount || "",
-            weight: ex.weight || "",
-        }
-    }
-    return {
-        name: backendData.name,
-        note: backendData.note || "",
-        exercises: orderedArray,
-    };
 };
 
 const WorkoutPlanForm = ({currentPlanId, onSubmit}: WorkoutPlanFormProps) => {

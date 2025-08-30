@@ -1,21 +1,101 @@
 import {useParams, Link} from 'react-router-dom';
-import {sampleWorkoutLogs, sampleWorkoutPlans} from "@/lib/example_data";
 import { Button } from "@/components/ui/button";
-import {getName} from "@/lib/utils";
+import {getName, transformBackendDataToForm} from "@/lib/utils";
 import {Table, TableBody, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import ExerciseTableRow from "@/components/workouts/ExerciseTableRow";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {workoutLogFormSchema, type WorkoutLogFormValues} from "@/lib/schemas/LoggingSchemas";
 import {FormControl, FormField, Form, FormItem, FormMessage, FormLabel} from '@/components/ui/form';
 import {Textarea} from "@/components/ui/textarea";
 import {useAuth} from "@/contexts/auth-context";
+import {useEffect, useState} from "react";
+import {plansExercisesApi, trainerClientApi} from "@/lib/axios_instance";
+import {type Profile} from "@/lib/types";
 
 
 const WorkoutDetailsPage = () => {
     const { workoutId } = useParams();
-    const workout = sampleWorkoutPlans.find(plan => plan.id === workoutId);
-    const { userData, isLoading } = useAuth();
+    const [workout, setWorkout] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const { userData, isLoading: isLoadingUser } = useAuth();
+    const [author, setAuthor] = useState<Profile>( {username: ""} as Profile);
+    let userLogs: any = null;
+
+    const fetchCoachProfileData = async (coachID: number) => {
+        try {
+            if(coachID) {
+                const response = await trainerClientApi.get(`/users/profile/${coachID}`);
+                setAuthor(response.data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch trainer data:', error);
+        }
+    };
+
+    const fetchWorkout = async () => {
+        setIsLoading(true);
+        try {
+            const response = await plansExercisesApi.get(`/trainer/plan/${workoutId}`);
+            const transformedData = transformBackendDataToForm(response.data);
+            setWorkout({
+                ...transformedData,
+                coachID: response.data.coachID,
+            })
+            console.log("Fetched workout:", transformedData);
+            return response.data.coachID;
+        } catch (error) {
+            console.error("Failed to fetch workout plan:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const fetchWorkoutLogs = async () => {
+        try {
+            const response = await plansExercisesApi.get(`/plan/${workoutId}`);
+            const transformedData = transformBackendDataToForm(response.data);
+            console.log("Fetched Logs:", userLogs, response.data);
+            userLogs = transformedData;
+        } catch (error) {
+            console.error("Failed to fetch workout plan:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+
+    useEffect(() => {
+        fetchWorkout().then((coachID) =>
+            fetchCoachProfileData(coachID)
+        );
+        fetchWorkoutLogs()
+    }, []);
+
+    const existingLogs = null;
+
+    const form = useForm<WorkoutLogFormValues>({
+        resolver: zodResolver(workoutLogFormSchema),
+        defaultValues: {
+            log_note:  "",
+            log_exercises: [],
+            // log_note: existingLogs?.log_note || "",
+            // log_exercises: workout.exercises.map((exercise, index) => ({
+            //     actualReps: existingLogs?.log_exercises[index]?.actualReps || Array(exercise.reps.length).fill(''),
+            //     actualWeight: existingLogs?.log_exercises[index]?.actualWeight || Array(exercise.reps.length).fill(0),
+            //     actualBreakTime: existingLogs?.log_exercises[index]?.actualBreakTime || Array(exercise.reps.length).fill(0),
+            // })),
+        },
+        mode: "onBlur"
+    });
+
+    if (isLoading || isLoadingUser) {
+        return <div className="text-center p-6">Ładowanie...</div>;
+    }
+
+    if (!userData) {
+        return <div className="text-center p-6 text-red-500">Błąd: Użytkownik niezalogowany.</div>;
+    }
+
     if (!workout) {
         return (
             <div className="container mx-auto p-6 text-center">
@@ -28,29 +108,6 @@ const WorkoutDetailsPage = () => {
         );
     }
 
-    const existingLogs = sampleWorkoutLogs.find(log => log.plan == workout);
-
-    const form = useForm<WorkoutLogFormValues>({
-        resolver: zodResolver(workoutLogFormSchema),
-        defaultValues: {
-            log_note: existingLogs?.log_note || "",
-            log_exercises: workout.exercises.map((exercise, index) => ({
-                actualReps: existingLogs?.log_exercises[index]?.actualReps || Array(exercise.reps.length).fill(''),
-                actualWeight: existingLogs?.log_exercises[index]?.actualWeight || Array(exercise.reps.length).fill(0),
-                actualBreakTime: existingLogs?.log_exercises[index]?.actualBreakTime || Array(exercise.reps.length).fill(0),
-            })),
-        },
-        mode: "onBlur"
-    });
-
-    if (isLoading) {
-        return <div className="text-center p-6">Ładowanie...</div>;
-    }
-
-    if (!userData) {
-        return <div className="text-center p-6 text-red-500">Błąd: Użytkownik niezalogowany.</div>;
-    }
-
     const { handleSubmit, control } = form;
 
     const onLogSubmit = (data: WorkoutLogFormValues) => {
@@ -61,7 +118,7 @@ const WorkoutDetailsPage = () => {
     return (
         <div className="container mx-auto p-6 text-center">
             <h1 className="text-xl md:text-4xl font-bold  md:mb-4">{workout.name}</h1>
-            <p className="text-md md:text-lg mb-1">Trener: {getName(workout.author)}</p>
+            <p className="text-md md:text-lg mb-1">Trener: {getName(author)}</p>
             <span className="flex flex-col text-md md:text-lg mb-1">Notatka Trenera: <span>{workout.note}</span></span>
             <p className="text-md md:text-lg mb-1 md:mb-3">{workout.date}</p>
             {!existingLogs && !userData.isCoach ? (
@@ -98,20 +155,20 @@ const WorkoutDetailsPage = () => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {workout.exercises.map((workoutExercise, index ) => (
-                        <ExerciseTableRow
-                            key={workoutExercise.exercise.name + workoutExercise.reps + workoutExercise.weight + workoutExercise.exercise.id + workoutExercise.breakTime}
-                            exercise={workoutExercise.exercise}
-                            reps={workoutExercise.reps}
-                            weight={workoutExercise.weight}
-                            breakTime={workoutExercise.breakTime}
-                            actualBreakTime={existingLogs ? existingLogs.log_exercises[index].actualBreakTime : []}
-                            actualReps={existingLogs ? existingLogs.log_exercises[index].actualReps : []}
-                            actualWeight={existingLogs ? existingLogs.log_exercises[index].actualWeight : []}
-                            control={control}
-                            exerciseIndex={index}
-                        />
-                    ))}
+                    {/*{workout.exercises.map((workoutExercise, index ) => (*/}
+                    {/*    <ExerciseTableRow*/}
+                    {/*        key={workoutExercise.exercise.name + workoutExercise.reps + workoutExercise.weight + workoutExercise.exercise.id + workoutExercise.breakTime}*/}
+                    {/*        exercise={workoutExercise.exercise}*/}
+                    {/*        reps={workoutExercise.reps}*/}
+                    {/*        weight={workoutExercise.weight}*/}
+                    {/*        breakTime={workoutExercise.breakTime}*/}
+                    {/*        actualBreakTime={existingLogs ? existingLogs.log_exercises[index].actualBreakTime : []}*/}
+                    {/*        actualReps={existingLogs ? existingLogs.log_exercises[index].actualReps : []}*/}
+                    {/*        actualWeight={existingLogs ? existingLogs.log_exercises[index].actualWeight : []}*/}
+                    {/*        control={control}*/}
+                    {/*        exerciseIndex={index}*/}
+                    {/*    />*/}
+                    {/*))}*/}
 
                 </TableBody>
             </Table>
