@@ -1,14 +1,17 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require('../db');
 
-const ClientWorkoutLog = sequelize.define("ClientWorkoutLog", {
-    planID: {
+// Logi dla jednego ćwiczenia z jednego planu
+const ClientWorkoutLogExercise = sequelize.define("ClientWorkoutLog", {
+    id: {
         type: DataTypes.INTEGER,
-        required: true,
+        primaryKey: true,
+        autoIncrement: true,
     },
-    clientID: {
+    // ID z ClientTrainingPlan
+    workoutLogID: {
         type: DataTypes.INTEGER,
-        required: true,
+        allowNull: false,
     },
     actualReps: {
         type: DataTypes.STRING,
@@ -25,4 +28,4 @@ const ClientWorkoutLog = sequelize.define("ClientWorkoutLog", {
     },
 });
 
-module.exports = ClientWorkoutLog;
+module.exports = ClientWorkoutLogExercise;
