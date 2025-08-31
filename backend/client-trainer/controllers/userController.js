@@ -100,14 +100,16 @@ const getUserProfile = async (req, res) => {
     const user = await User.findOne({
       where: {
         userID: requestingUserId,
-      },attributes: ['userID', 'username', 'picture', "givenName", "surname" ]
+      }
     });
 
     if (!user) {
       throw new ApiError(404, 'User not found');
     }
+    const userJson = user.toJSON();
+    userJson.email = req.email;
 
-    res.status(200).json(user);
+    res.status(200).json(userJson);
   } catch (error) {
     if (error instanceof ApiError) {
       res.status(error.statusCode).json({ error: error.message });
