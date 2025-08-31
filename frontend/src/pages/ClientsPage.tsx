@@ -53,7 +53,7 @@ const ClientsPage = () => {
                                 variant="link"
                                 className="w-full cursor-pointer "
                             >
-                                <Link to={`/clients/logs/${userProfile.username}`}>
+                                <Link to={`/clients/logs/${userProfile.userID}`}>
                                     Sprawdź historię treningów
                                 </Link>
                             </Button>

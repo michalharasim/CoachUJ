@@ -5,9 +5,9 @@ const TrainingPlan = require('../../models/training_plan');
 const PlanExercise = require('../../models/plan_exercise');
 const Category = require('../../models/category');
 const ExerciseCategory = require('../../models/exercise_category');
-// const User = require('../../models/user');
-const ClientTrainingPlan = require('../../models/client_training_plan');
+const WorkoutLog = require('../../models/workout_log');
 const sequelize = require('../../db');
+const WorkoutLogExercise = require('../../models/workout_log_exercise');
 
 const getExercise = async (req, res) => {
     if (req.role !== "trainer") {
@@ -298,12 +298,15 @@ const addPlanToClient = async (req, res) => {
     const clientID = req.params.client_id;
     const trainerID = req.user_id;
 
+    const t = await sequelize.transaction();
+
     try {
         const plan = await TrainingPlan.findOne({
             where: {
                 id: planID,
                 coachID: trainerID,
             },
+            transaction: t
         });
 
         if (!plan) {
@@ -313,10 +316,40 @@ const addPlanToClient = async (req, res) => {
             });
         }
 
-        await ClientTrainingPlan.create({
+        // Stworzony rekord sesji treningowej (WorkoutLog)
+        const newLog = await WorkoutLog.create({
             planID: planID,
             clientID: clientID,
+        },{
+            transaction: t,
         });
+
+        // Tworzenie pustych logów (domyślnych) dla każdego cwiczenia dla klienta
+        // Znajdź wszystkie ćwiczenia przypisane do tego planu
+        const planExercises = await PlanExercise.findAll({
+            where: { planID: planID },
+            transaction: t
+        });
+
+        const logExercisesData = planExercises.map(pe => {
+            const setCount = pe.repCount.split(' ').length;
+            const zeroReps = Array(setCount).fill('0').join(' ');
+            const zeroWeight = Array(setCount).fill('0').join(' ');
+            const zeroBreakTime = Array(setCount).fill('0').join(' ');
+
+            return {
+                workoutLogID: newLog.id,
+                planExerciseID: pe.id,
+                actualReps: zeroReps,
+                actualWeight: zeroWeight,
+                breakTime: zeroBreakTime,
+                notes: '',
+            };
+        });
+
+        await WorkoutLogExercise.bulkCreate(logExercisesData, { transaction: t });
+
+        await t.commit();
 
         return res.status(201).json({
             success: true,

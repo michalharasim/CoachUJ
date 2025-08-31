@@ -9,56 +9,37 @@ const app = express();
 const Exercise = require("./models/exercise");
 const TrainingPlan = require("./models/training_plan");
 const PlanExercise = require("./models/plan_exercise");
-const ClientTrainingPlan = require("./models/client_training_plan");
+const WorkoutLog = require("./models/workout_log");
 const Category = require("./models/category");
 const ExerciseCategory = require("./models/exercise_category");
 // const User = require("./models/user");
-const ClientWorkoutLog = require("./models/client_workout_log");
+const WorkoutLogExercise = require("./models/workout_log_exercise");
 
-// TODO: add coachID -> TrainingPlan when coach table is implemented
 PlanExercise.belongsTo(Exercise, {
     foreignKey: "exerciseID",
     as: "exercise",
     allowNull: false,
 });
 Exercise.hasMany(PlanExercise, { foreignKey: "exerciseID" });
-PlanExercise.belongsTo(TrainingPlan, {
-    foreignKey: "planID",
-    as: "plan_exercise",
-    allowNull: false,
-});
-TrainingPlan.hasMany(PlanExercise, { foreignKey: "planID" });
 
-ClientTrainingPlan.belongsTo(TrainingPlan, {
-    foreignKey: "planID",
-    as: "plan",
-    allowNull: false,
-});
-TrainingPlan.hasMany(ClientTrainingPlan, { foreignKey: "planID" });
+// Plan treningowy składa się z wielu ćwiczeń
+TrainingPlan.hasMany(PlanExercise, { foreignKey: 'planID', as: 'exercises' });
+PlanExercise.belongsTo(TrainingPlan, { foreignKey: 'planID' });
 
-// User.hasMany(ClientTrainingPlan, { foreignKey: "clientID" });
-// ClientTrainingPlan.belongsTo(TrainingPlan, {
-//     foreignKey: "planID",
-//     as: "plan",
-//     allowNull: false,
-// });
-TrainingPlan.hasMany(ClientTrainingPlan, { foreignKey: "planID" });
-// ClientWorkoutLog.belongsTo(User, {
-//     foreignKey: "clientID",
-//     as: "client",
-//     allowNull: false,
-// });
-// User.hasMany(ClientWorkoutLog, { foreignKey: "clientID" });
+// Plan treningowy może być podstawą dla wielu sesji treningowych
+TrainingPlan.hasMany(WorkoutLog, { foreignKey: 'planID', as: 'logs' });
+WorkoutLog.belongsTo(TrainingPlan, { foreignKey: 'planID', as: "plan"});
+
+// Sesja treningowa (WorkoutLog) składa się z wielu wykonanych ćwiczeń (WorkoutLogExercise)
+WorkoutLog.hasMany(WorkoutLogExercise, { foreignKey: 'workoutLogID', as: 'loggedExercises' });
+WorkoutLogExercise.belongsTo(WorkoutLog, { foreignKey: 'workoutLogID' });
+
+// Ćwiczenie z planu (PlanExercise) może mieć wiele logów z różnych sesji
+PlanExercise.hasMany(WorkoutLogExercise, { foreignKey: 'planExerciseID' });
+WorkoutLogExercise.belongsTo(PlanExercise, { foreignKey: 'planExerciseID' });
 
 Exercise.belongsToMany(Category, { through: ExerciseCategory, foreignKey: "exerciseId" });
 Category.belongsToMany(Exercise, { through: ExerciseCategory, foreignKey: "categoryId" });
-
-ClientWorkoutLog.belongsTo(TrainingPlan, {
-    foreignKey: "planID",
-    as: "plan",
-    allowNull: false,
-});
-TrainingPlan.hasMany(ClientWorkoutLog, { foreignKey: "planID" });
 
 async function syncDatabase() {
     try {

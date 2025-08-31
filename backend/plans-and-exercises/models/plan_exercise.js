@@ -7,14 +7,14 @@ const PlanExercise = sequelize.define("PlanExercise", {
         primaryKey: true,
         autoIncrement: true,
     },
-    // planID: {
-    //     type: DataTypes.INTEGER,
-    //     allowNull: false,
-    // },
-    // exerciseID: {
-    //     type: DataTypes.INTEGER,
-    //     allowNull: false,
-    // },
+    planID: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    exerciseID: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
     setCount: {
         type: DataTypes.INTEGER,
     },

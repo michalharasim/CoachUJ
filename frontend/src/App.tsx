@@ -40,15 +40,14 @@ function App() {
                       {/* TRASY CHRONIONE */}
                       {/* ---------------------------------------------------- */}
                       <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-                          <Route path="/dashboard" element={<Dashboard />} />
                           <Route path="/profile" element={<Profile />} />
                           <Route path="/coaches" element={<CoachPage />} />
                           <Route path="/workouts" element={<WorkoutPage />} />
                           <Route path="/messages" element={<MessagesPage />} />
                           <Route path="/workouts/:workoutId" element={<WorkoutDetailsPage />} />
                           <Route path="/clients" element={<ClientsPage />} />
-                          <Route path="/clients/logs/:username" element={<WorkoutPage />} />
-                          <Route path="/clients/logs/plan/:workoutId" element={<WorkoutDetailsPage />} />
+                          <Route path="/clients/logs/:clientID" element={<WorkoutPage />} />
+                          <Route path="/clients/logs/plan/:workoutId/:clientID" element={<WorkoutDetailsPage />} />
                           <Route path="/invites" element={<InvitesPage />} />
                           <Route path="/plans" element={<PlansPage />} />
                           <Route path="/exercises" element={<ExercisesPage />} />

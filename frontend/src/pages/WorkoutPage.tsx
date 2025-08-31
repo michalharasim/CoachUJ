@@ -4,6 +4,7 @@ import {Button} from "@/components/ui/button";
 import {useAuth} from "@/contexts/auth-context";
 import {plansExercisesApi} from "@/lib/axios_instance";
 import axios from "axios";
+import {useLocation, useParams} from "react-router-dom";
 
 export type fetchedWorkoutPlanInfoClient = {
     id: number,
@@ -17,9 +18,21 @@ const WorkoutPage = () => {
     const [plans, setPlans] = useState<fetchedWorkoutPlanInfoClient[]>([]);
     const { userData, isLoading } = useAuth();
 
+    const { clientID } = useParams();
+
     const fetchPlans = async () => {
         try {
-            const response = await plansExercisesApi.get('/plan/all');
+            if (!userData) {
+                return;
+            }
+            let response;
+            if (userData.isCoach && clientID) {
+                response = await plansExercisesApi.get(`/plan/client/${clientID}/plans`);
+            } else if (!userData.isCoach) {
+                response = await plansExercisesApi.get('/plan/all');
+            } else {
+                return;
+            }
             const parsedPlans = response.data.plans.map((plan: any) => ({
                 ...plan,
                 date: new Date(plan.date),
@@ -46,7 +59,7 @@ const WorkoutPage = () => {
 
     useEffect(() => {
         fetchPlans();
-    }, []);
+    }, [userData, location.pathname, clientID]);
 
 
     const filteredWorkouts = plans.filter(workout => {
@@ -97,7 +110,7 @@ const WorkoutPage = () => {
                             workoutDate={workout.date}
                             workoutAuthorId={workout.coachID}
                             workoutName={workout.name}
-                            workoutBaseUrl={userData.isCoach ? "/clients/logs/plan" : "/workouts"
+                            workoutUrl={userData.isCoach ? `/clients/logs/plan/${workout.id}/${clientID}` : `/workouts/${workout.id}`
                         } />
                     ))
                 ) : (

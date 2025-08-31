@@ -2,7 +2,7 @@ const sequelize = require('../db');
 const {DataTypes} = require("sequelize");
 
 // W momencie wysłania planu do klienta przez trenera tworzy się rekord w tabeli
-const WorkoutLog = sequelize.define("ClientTrainingPlan", {
+const WorkoutLog = sequelize.define("WorkoutLog", {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -22,4 +22,4 @@ const WorkoutLog = sequelize.define("ClientTrainingPlan", {
     },
 });
 
-module.exports = ClientTrainingPlan;
+module.exports = WorkoutLog;

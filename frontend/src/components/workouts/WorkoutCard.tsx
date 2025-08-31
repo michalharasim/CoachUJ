@@ -11,10 +11,10 @@ type WorkoutCardProps = {
     workoutName: string;
     workoutDate: Date;
     workoutAuthorId: number;
-    workoutBaseUrl: string;
+    workoutUrl: string;
 }
 
-const WorkoutCard = ({workoutBaseUrl, workoutID, workoutAuthorId, workoutName, workoutDate }: WorkoutCardProps) => {
+const WorkoutCard = ({workoutUrl, workoutID, workoutAuthorId, workoutName, workoutDate }: WorkoutCardProps) => {
     const [user, setUser] = useState<Profile>();
 
     const fetchCoachProfileData = async () => {
@@ -32,7 +32,7 @@ const WorkoutCard = ({workoutBaseUrl, workoutID, workoutAuthorId, workoutName, w
     }, []); // Empty dependency array ensures this runs only once
 
     return (
-        <Link to={`${workoutBaseUrl}/${workoutID}`}>
+        <Link to={workoutUrl}>
             <div className="bg-card rounded-lg shadow-sm shadow-primary p-4 cursor-pointer hover:shadow-lg transition-shadow duration-300 flex flex-col gap-2">
                 <div className="flex flex-col h-full gap-2 items-center justify-between">
                     <h3 className="font-semibold text-sm lg:text-md text-center">{workoutName}</h3>

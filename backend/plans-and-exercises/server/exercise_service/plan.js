@@ -1,88 +1,223 @@
 const { serverError } = require("../helpers");
-const ClientWorkoutLog = require('../../models/client_workout_log');
+const WorkoutLogExercise = require('../../models/workout_log_exercise');
 const TrainingPlan = require('../../models/training_plan');
-// const User = require('../../models/user');
-const ClientTrainingPlan = require('../../models/client_training_plan');
+const WorkoutLog = require('../../models/workout_log');
+const PlanExercise = require('../../models/plan_exercise');
+const Exercise = require('../../models/exercise');
+const Category = require('../../models/category');
+const sequelize = require("../../db");
+const { Sequelize} = require("sequelize");
 
-const getLogs = async (req, res) => {
-    const planID = parseInt(req.params.plan_id);
+
+async function getTrainerClientPlanWithLogs(req, res) {
+    try {
+        const { plan_id } = req.params;
+        const clientID = parseInt(req.params.clientID, 10)
+        if (isNaN(clientID)) {
+            return res.status(400).json({ message: "Invalid client ID format." });
+        }
+        console.log("--- URUCHOMIONO ENDPOINT TRENERA ---");
+        console.log(`Otrzymany plan_id: ${plan_id}, Otrzymany clientID: ${req.params.clientID}`);
+        console.log(`Sparowany plan_id: ${plan_id}, Sparowany clientID: ${clientID}`);
+
+        const planWithLogs = await TrainingPlan.findOne({
+            where: { id: plan_id },
+            include: [
+                {
+                    // Dołącz ćwiczenia zdefiniowane w planie
+                    model: PlanExercise,
+                    as: 'exercises',
+                    include: [
+                        {
+                            model: Exercise,
+                            as: 'exercise', // Używamy aliasu z definicji relacji
+                            attributes: ['name', 'description', 'picture'], // Pobieramy potrzebne dane
+                            include: [
+                                {
+                                    model: Category,
+                                    attributes: ['name'], // Pobieramy tylko nazwę kategorii
+                                    through: { attributes: [] }
+                                }
+                            ]
+
+                        }
+                    ]
+
+                },
+                {
+                    // Dołącz wszystkie sesje treningowe dla tego planu i klienta
+                    model: WorkoutLog,
+                    as: 'logs',
+                    where: { clientID: clientID },
+                    required: false, // `false` aby plan został zwrócony nawet bez logów
+                    include: [
+                        {
+                            // Do każdej sesji dołącz wykonane ćwiczenia
+                            model: WorkoutLogExercise,
+                            as: 'loggedExercises',
+                        }
+                    ]
+                }
+            ],
+            order: [
+                // Poprawne sortowanie zagnieżdżonych modeli
+                [{ model: PlanExercise, as: 'exercises' }, 'order', 'ASC']
+            ]
+        });
+
+        console.log(`Wynik głównego zapytania: znaleziono ${planWithLogs.logs.length} logów w obiekcie planu.`);
+        console.log("--- ZAKOŃCZONO ENDPOINT TRENERA ---");
+
+        if (!planWithLogs) {
+            return res.status(404).json({ message: "Plan not found" });
+        }
+
+        res.status(200).json(planWithLogs);
+
+    } catch (error) {
+        console.error("Error fetching plan with logs:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+}
+
+
+async function getClientPlanWithLogs(req, res) {
+    try {
+        const clientID = req.user_id;
+        const { plan_id } = req.params;
+
+        const planWithLogs = await TrainingPlan.findOne({
+            where: { id: plan_id },
+            include: [
+                {
+                    // Dołącz ćwiczenia zdefiniowane w planie
+                    model: PlanExercise,
+                    as: 'exercises',
+                    include: [
+                        {
+                            model: Exercise,
+                            as: 'exercise', // Używamy aliasu z definicji relacji
+                            attributes: ['name', 'description', 'picture'], // Pobieramy potrzebne dane
+                            include: [
+                                {
+                                    model: Category,
+                                    attributes: ['name'], // Pobieramy tylko nazwę kategorii
+                                    through: { attributes: [] }
+                                }
+                            ]
+
+                        }
+                    ]
+
+                },
+                {
+                    // Dołącz wszystkie sesje treningowe dla tego planu i klienta
+                    model: WorkoutLog,
+                    as: 'logs',
+                    where: { clientID: clientID },
+                    required: false, // `false` aby plan został zwrócony nawet bez logów
+                    include: [
+                        {
+                            // Do każdej sesji dołącz wykonane ćwiczenia
+                            model: WorkoutLogExercise,
+                            as: 'loggedExercises',
+                        }
+                    ]
+                }
+            ],
+            order: [
+                // Poprawne sortowanie zagnieżdżonych modeli
+                [{ model: PlanExercise, as: 'exercises' }, 'order', 'ASC']
+            ]
+        });
+
+        if (!planWithLogs) {
+            return res.status(404).json({ message: "Plan not found" });
+        }
+
+        res.status(200).json(planWithLogs);
+
+    } catch (error) {
+        console.error("Error fetching plan with logs:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+}
+
+async function saveWorkoutLog(req, res) {
     const clientID = req.user_id;
+    if (!clientID) {
+        return res.status(401).json({ error: 'Access denied' });
+    }
+
+    const {notes, exercises, logID } = req.body;
+
+    const t = await sequelize.transaction();
+
     try {
-        const clientWorkoutLogs = await ClientWorkoutLog.findAll({
+        // Stwórz główny rekord sesji treningowej (WorkoutLog).
+        const workout = await WorkoutLog.findOne({
             where: {
-                planID: planID,
-                clientID: clientID,
+                id: logID,
             },
-        });
-        if (clientWorkoutLogs.length === 0) {
+            transaction: t,
+        })
+
+        if(!workout) {
             return res.status(404).json({
                 success: false,
-                error: "Logs for given plan and client are not found.",
+                error: "Workout with given id doesnt exist",
             });
+
         }
 
-        const shortenWorkoutLogs = clientWorkoutLogs.map(obj => {
-            const {actualSteps, actualReps, breakTime, notes, actualWeight} = obj;
-            return {actualSteps, actualReps, breakTime, notes, actualWeight};
+        workout.update({
+            notes: notes
+        }, {
+            transaction: t,
+        })
+
+        const logExercisesData = exercises.map(exercise => {
+            // Upewniamy się, że przesyłamy tylko potrzebne dane
+            return {
+                id: exercise.id,
+                planExerciseID: exercise.planExerciseID,
+                actualReps: exercise.actualReps,
+                actualWeight: exercise.actualWeight,
+                breakTime: exercise.actualBreakTime,
+                workoutLogID: logID,
+            };
         });
 
-        return res.status(200).json({
+        // Zapisz wszystkie wykonane ćwiczenia w jednej operacji
+        await WorkoutLogExercise.bulkCreate(logExercisesData, {
+            // które pola mają być zaktualizowane w razie znalezienia duplikatu
+            updateOnDuplicate: ["actualReps", "actualWeight", "breakTime"],
+            transaction: t
+        });
+
+        // W tym momencie zmiany zostaną trwale zapisane w bazie danych.
+        await t.commit();
+
+        res.status(201).json({
             success: true,
-            planID: planID,
-            clientID: clientID,
-            logs: shortenWorkoutLogs,
+            message: "Workout log created successfully!",
+            logId: workout.id
         });
-    } catch (error) {
-        return serverError(res, "Error on get logs:", error);
-    }
-};
 
-const addLogs = async (req, res) => {
-    const planID = parseInt(req.params.plan_id);
-    const clientID = parseInt(req.params.client_id);
-    const body = req.body;
-    try {
-        const plan = await TrainingPlan.findOne({
-            where: {
-                id: planID,
-            },
-        });
-        // const client = await User.findOne({
-        //     where: {
-        //         id: clientID,
-        //     },
-        // });
-        if (plan === null /*|| client === null*/) {
-            return res.status(404).json({
-                success: false,
-                // error: "Plan or client with given id not found",
-                error: "Plan with given id not found",
-            });
-        }
-
-        await ClientWorkoutLog.create({
-            planID: planID,
-            clientID: clientID,
-            actualSteps: body.actualSteps,
-            actualReps: body.actualReps,
-            breakTime: body.breakTime,
-            notes: body.notes,
-            actualWeight: body.actualWeight,
-        });
-        return res.status(201).json({
-            success: true,
-            planID: planID,
-            clientID: clientID,
-        });
     } catch (error) {
-        return serverError(res, "Error on add logs:", error);
+        // Jeśli jakakolwiek operacja w bloku `try` się nie powiodła,
+        // wycofaj wszystkie zmiany dokonane w ramach tej transakcji.
+        await t.rollback();
+
+        // Zwróć błąd serwera.
+        return serverError(res, "Failed to create workout log.", error);
     }
-};
+}
 
 const getPlan = async (req, res) => {
     const clientID = req.user_id;
     try {
-        const clientPlan = await ClientTrainingPlan.findOne({
+        const clientPlan = await WorkoutLog.findOne({
             where: {
                 clientID: clientID,
             },
@@ -118,12 +253,13 @@ const getPlan = async (req, res) => {
 };
 
 const getClientPlans = async (req, res) => {
-    if (req.role !== "client") {
-        return res.status(401).json({ error: 'Access denied' });
+    let clientID = req.user_id;
+    if (req.params.clientID){
+        clientID = req.params.clientID;
     }
-    const clientID = req.user_id;
+
     try {
-        const plans = await ClientTrainingPlan.findAll({
+        const plans = await WorkoutLog.findAll({
             where: { clientID },
             include: [
                 {
@@ -154,9 +290,51 @@ const getClientPlans = async (req, res) => {
     }
 }
 
+// Plany konkretnego trenera dla klienta
+const getTrainerClientPlans = async (req, res) => {
+    const clientID = req.params.clientID;
+    const trainerID = req.user_id;
+
+    try {
+        const plans = await WorkoutLog.findAll({
+            where: { clientID },
+            include: [
+                {
+                    model: TrainingPlan,
+                    as: "plan",
+                    where: {
+                        coachID: trainerID
+                    },
+                    attributes: ["id", "name", "coachID"],
+                },
+            ],
+            attributes: ["createdAt"], // data przypisania klientowi
+        });
+
+        const flatPlans = plans.map(p => {
+            const plain = p.get({ plain: true });
+            return {
+                id: plain.plan.id,
+                name: plain.plan.name,
+                coachID: plain.plan.coachID,
+                date: plain.createdAt,
+            };
+        });
+
+        return res.status(200).json({
+            success: true,
+            plans: flatPlans
+        });
+    } catch (error) {
+        return serverError(res, "Error fetching trainer plans:", error);
+    }
+}
+
 module.exports = {
-    getLogs,
-    addLogs,
+    getClientPlanWithLogs,
+    saveWorkoutLog,
     getPlan,
     getClientPlans,
+    getTrainerClientPlans,
+    getTrainerClientPlanWithLogs,
 }

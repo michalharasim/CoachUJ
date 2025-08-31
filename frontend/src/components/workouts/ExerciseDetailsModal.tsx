@@ -32,10 +32,10 @@ const ExerciseDetailsModal: React.FC<ExerciseDetailsModalProps> = ({ exercise, c
                 <div className="grid gap-4 py">
                     <div className="flex flex-row gap-2">
                         <Tag/>
-                        {exercise.categories.map((category, index) => (
+                        {exercise.Categories.map((category, index) => (
                             <span className="text-sm font-semibold" key={category.name + "_" + index}>
                                 {category.name}
-                                {index < exercise.categories.length - 1 && ", "}
+                                {index < exercise.Categories.length - 1 && ", "}
                             </span>
                         ))}
                     </div>

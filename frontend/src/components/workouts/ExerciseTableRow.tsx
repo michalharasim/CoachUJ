@@ -6,7 +6,6 @@ import type {Exercise} from "@/lib/types";
 import {formatSecondsToMinutesAndSeconds} from "@/lib/utils";
 import {type Control, Controller} from "react-hook-form";
 import {Input} from "@/components/ui/input";
-import {useAuth} from "@/contexts/auth-context";
 
 type ExerciseTableRowProps = {
     exercise: Exercise;
@@ -19,6 +18,7 @@ type ExerciseTableRowProps = {
     actualBreakTime?: number[];
     control: Control<any>;
     exerciseIndex: number;
+    isCoach: boolean;
 }
 
 const ExerciseTableRow = ({
@@ -31,19 +31,10 @@ const ExerciseTableRow = ({
     actualBreakTime,
     control,
     exerciseIndex,
+    isCoach,
                           } : ExerciseTableRowProps) => {
 
     const [isOpen, setIsOpen] = useState<boolean>(false);
-    const hasLogs = actualReps && actualReps.length > 0;
-    const {user, isLoading} = useAuth();
-
-    if (isLoading) {
-        return <div className="text-center p-6">Ładowanie...</div>;
-    }
-
-    if (!user) {
-        return <div className="text-center p-6 text-red-500">Błąd: Użytkownik niezalogowany.</div>;
-    }
 
     return (
         <>
@@ -81,11 +72,10 @@ const ExerciseTableRow = ({
                                 <TableRow key={exerciseIndex + "_" + setIndex}>
                                     <TableCell>{setIndex + 1}</TableCell>
                                     <TableCell className="text-center">
-                                        {!hasLogs && user.role == "klient" ? (
+                                        {!isCoach ? (
                                             <Controller
                                                 name={`log_exercises.${exerciseIndex}.actualReps.${setIndex}`}
                                                 control={control}
-                                                defaultValue={hasLogs ? actualReps?.[setIndex] : ''}
                                                 render={({ field }) => (
                                                     <span className="flex flex-row gap-2 justify-center">
                                                         <Input
@@ -99,15 +89,14 @@ const ExerciseTableRow = ({
                                                 )}
                                             />
                                         ) : (
-                                            `${hasLogs ? actualReps?.[setIndex] : '---'} / ${plannedRep}`
+                                            `${actualReps?.[setIndex] ? actualReps?.[setIndex] : '---'} / ${plannedRep}`
                                         )}
                                     </TableCell>
                                     <TableCell className="text-center">
-                                        {!hasLogs && user.role == "klient" ? (
+                                        {!isCoach ? (
                                             <Controller
                                                 name={`log_exercises.${exerciseIndex}.actualWeight.${setIndex}`}
                                                 control={control}
-                                                defaultValue={hasLogs ? actualWeight?.[setIndex] : ''}
                                                 render={({ field }) => (
                                                     <span className="flex flex-row gap-2 justify-center">
                                                         <Input
@@ -122,15 +111,14 @@ const ExerciseTableRow = ({
                                                 )}
                                             />
                                         ) : (
-                                            `${hasLogs ? actualWeight?.[setIndex] : '---'} / ${weight[setIndex]}`
+                                            `${actualWeight?.[setIndex] ? actualWeight?.[setIndex] : '---'} / ${weight[setIndex]}`
                                         )}
                                     </TableCell>
                                     <TableCell className="text-center">
-                                        {!hasLogs && user.role == "klient" ? (
+                                        {!isCoach ? (
                                             <Controller
                                                 name={`log_exercises.${exerciseIndex}.actualBreakTime.${setIndex}`}
                                                 control={control}
-                                                defaultValue={hasLogs ? actualBreakTime?.[setIndex] : ''}
                                                 render={({ field }) => (
                                                     <span className="flex flex-row gap-2 justify-center">
                                                         <Input

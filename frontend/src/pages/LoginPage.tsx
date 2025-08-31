@@ -35,7 +35,7 @@ const LoginPage = () : React.ReactElement => {
             setIsError(false);
             setPassword('');
             setEmail('');
-            navigate('/dashboard', { replace: true });
+            navigate('/profile', { replace: true });
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 // czy odpowiedz serwera istnieje

@@ -52,10 +52,6 @@ const ExercisesPage = () => {
         refetch_exercises();
     }
 
-    // filtrowanie
-    const myExercises = exercises.filter(exercise => exercise.isMyExercise !== null);   // prywatne
-    const publicExercises = exercises.filter(exercise => exercise.isMyExercise === null);
-
     return (
         <div className="w-full h-full">
             <div className="flex flex-row w-full justify-center items-center gap-5 mt-5">
@@ -65,7 +61,7 @@ const ExercisesPage = () => {
                 </Button>
             </div>
             <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,2fr))] gap-5 p-5">
-                {myExercises.map((exercise) => (
+                {exercises.map((exercise) => (
                     <div
                         className="flex flex-col items-center justify-center p-3 bg-secondary rounded-2xl cursor-pointer"
                         onClick={() => handleOpenEditModal(exercise)}
@@ -83,27 +79,6 @@ const ExercisesPage = () => {
                         </span>
                     </div>
                 ))}
-            </div>
-            <p className="text-3xl text-center pt-5 font-semibold">Ogólnodostępne Ćwiczenia</p>
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,2fr))] gap-5 p-5">
-                {publicExercises.map((exercise) => (
-                    <ExerciseDetailsModal exercise={exercise} key={exercise.name}>
-                        <div className="flex flex-col items-center justify-center p-3 bg-secondary rounded-2xl cursor-pointer">
-                            <span className="semibold text-center">{exercise.name}</span>
-
-                            <span className="text-center flex flex-row gap-2">
-                                <Tag />
-                                {exercise.categories.map((category, index) => (
-                                    <span className="text-sm font-semibold" key={exercise.name + category.name + index.toString()}>
-                                        {category.name}
-                                        {index < exercise.categories.length - 1 && ", "}
-                                    </span>
-                                ))}
-                            </span>
-                        </div>
-                    </ExerciseDetailsModal>
-                ))}
-
             </div>
             <MyExerciseModal
                 isOpen={isFormModalOpen}
