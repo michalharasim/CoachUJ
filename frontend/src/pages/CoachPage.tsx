@@ -42,13 +42,10 @@ const CoachPage = () => {
             setYourCoaches(connected);
             setAllCoaches(notConnected);
         } catch (error) {
-            // Check if the error is from Axios
             if (axios.isAxiosError(error)) {
-                // Access the server's response data
                 const responseData = error.response?.data;
                 let errorMessage = 'An unknown fetch trainers error occurred.';
 
-                // Check if the response data is an object with an 'error' property
                 if (responseData && typeof responseData === 'object' && 'error' in responseData) {
                     errorMessage = responseData.error;
                 }

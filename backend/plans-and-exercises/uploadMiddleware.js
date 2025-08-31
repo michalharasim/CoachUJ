@@ -12,8 +12,6 @@ const storage = multer.diskStorage({
         const randomHash = crypto.randomBytes(16).toString('hex');
         const fileExtension = path.extname(file.originalname);
         const uniqueName = `${randomHash}${fileExtension}`;
-
-        console.log("Plik zostanie zapisany do:", path.join(uploadPath, uniqueName));
         cb(null, uniqueName);
     },
 });

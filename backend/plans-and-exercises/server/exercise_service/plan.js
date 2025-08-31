@@ -16,26 +16,21 @@ async function getTrainerClientPlanWithLogs(req, res) {
         if (isNaN(clientID)) {
             return res.status(400).json({ message: "Invalid client ID format." });
         }
-        console.log("--- URUCHOMIONO ENDPOINT TRENERA ---");
-        console.log(`Otrzymany plan_id: ${plan_id}, Otrzymany clientID: ${req.params.clientID}`);
-        console.log(`Sparowany plan_id: ${plan_id}, Sparowany clientID: ${clientID}`);
-
         const planWithLogs = await TrainingPlan.findOne({
             where: { id: plan_id },
             include: [
                 {
-                    // Dołącz ćwiczenia zdefiniowane w planie
                     model: PlanExercise,
                     as: 'exercises',
                     include: [
                         {
                             model: Exercise,
-                            as: 'exercise', // Używamy aliasu z definicji relacji
-                            attributes: ['name', 'description', 'picture'], // Pobieramy potrzebne dane
+                            as: 'exercise',
+                            attributes: ['name', 'description', 'picture'],
                             include: [
                                 {
                                     model: Category,
-                                    attributes: ['name'], // Pobieramy tylko nazwę kategorii
+                                    attributes: ['name'],
                                     through: { attributes: [] }
                                 }
                             ]
@@ -49,7 +44,7 @@ async function getTrainerClientPlanWithLogs(req, res) {
                     model: WorkoutLog,
                     as: 'logs',
                     where: { clientID: clientID },
-                    required: false, // `false` aby plan został zwrócony nawet bez logów
+                    required: false,
                     include: [
                         {
                             // Do każdej sesji dołącz wykonane ćwiczenia
@@ -60,14 +55,9 @@ async function getTrainerClientPlanWithLogs(req, res) {
                 }
             ],
             order: [
-                // Poprawne sortowanie zagnieżdżonych modeli
                 [{ model: PlanExercise, as: 'exercises' }, 'order', 'ASC']
             ]
         });
-
-        console.log(`Wynik głównego zapytania: znaleziono ${planWithLogs.logs.length} logów w obiekcie planu.`);
-        console.log("--- ZAKOŃCZONO ENDPOINT TRENERA ---");
-
         if (!planWithLogs) {
             return res.status(404).json({ message: "Plan not found" });
         }
@@ -205,11 +195,7 @@ async function saveWorkoutLog(req, res) {
         });
 
     } catch (error) {
-        // Jeśli jakakolwiek operacja w bloku `try` się nie powiodła,
-        // wycofaj wszystkie zmiany dokonane w ramach tej transakcji.
         await t.rollback();
-
-        // Zwróć błąd serwera.
         return serverError(res, "Failed to create workout log.", error);
     }
 }
@@ -268,7 +254,7 @@ const getClientPlans = async (req, res) => {
                     attributes: ["id", "name", "coachID"],
                 },
             ],
-            attributes: ["createdAt"], // data przypisania klientowi
+            attributes: ["createdAt"],
         });
 
         const flatPlans = plans.map(p => {

@@ -68,7 +68,6 @@ const getUserNavProfile = async (req, res) => {
       throw new ApiError(404, 'User not found');
     }
 
-    // Transform sequelize object to insert email
     const userProfile = user.get({ plain: true });
     const returnData = {
       picture: userProfile.picture,

@@ -6,7 +6,6 @@ const {Op} = require("sequelize");
 const deleteConnection = async (req, res) => {
   const requestingUserId = req.user_id;
   const targetUserId = req.params.userID;
-  console.log(`Requesting user ID: ${requestingUserId}, Target user ID: ${targetUserId}`);
   try {
     const deletedCount = await ClientCoachLink.destroy({
       where: {
@@ -27,7 +26,6 @@ const deleteConnection = async (req, res) => {
 };
 
 const getConnectedUsers = async (req, res) => {
-  // trainers for clients and clients for trainers
   const userID = req.user_id;
   const isCoach = req.role === 'trainer';
 

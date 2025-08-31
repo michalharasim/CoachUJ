@@ -34,7 +34,6 @@ const PlansPage = () => {
 
     const handleSaveWorkoutPlan = (data: WorkoutPlanFormValues) => {
         try {
-            // Prepare data to for backend format
             data = transformWorkoutPlanDataInPlace(data)
             if (selectedWorkoutPlanToEdit && selectedWorkoutPlanToEdit.id) {
                 plansExercisesApi.put(`trainer/plan/${selectedWorkoutPlanToEdit.id.toString()}`, data);
@@ -68,13 +67,10 @@ const PlansPage = () => {
             const response = await plansExercisesApi.get('/trainer/plans');
             setPlans(response.data.plans);
         } catch (error) {
-            // Check if the error is from Axios
             if (axios.isAxiosError(error)) {
-                // Access the server's response data
                 const responseData = error.response?.data;
                 let errorMessage = 'An unknown fetch plans error occurred.';
 
-                // Check if the response data is an object with an 'error' property
                 if (responseData && typeof responseData === 'object' && 'error' in responseData) {
                     errorMessage = responseData.error;
                 }

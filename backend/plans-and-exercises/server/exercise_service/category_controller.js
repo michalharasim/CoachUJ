@@ -1,6 +1,5 @@
-const Category = require('../../models/Category'); // Make sure the path is correct
+const Category = require('../../models/Category');
 
-// Get all categories
 exports.getAllCategories = async (req, res) => {
     try {
         const categories = await Category.findAll({
@@ -12,7 +11,6 @@ exports.getAllCategories = async (req, res) => {
     }
 };
 
-// Add a new category
 exports.createCategory = async (req, res) => {
     try {
         const { name } = req.body;
@@ -29,7 +27,6 @@ exports.createCategory = async (req, res) => {
     }
 };
 
-// Delete a category by ID
 exports.deleteCategory = async (req, res) => {
     try {
         const { id } = req.params;

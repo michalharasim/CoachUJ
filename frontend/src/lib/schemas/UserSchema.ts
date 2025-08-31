@@ -41,5 +41,4 @@ export const userProfileSchema = z.object({
     profilePicture: fileSchema,
 });
 
-// Wyprowadzenie typu na podstawie schematu Zod
 export type UserProfileFormValues = z.infer<typeof userProfileSchema>;

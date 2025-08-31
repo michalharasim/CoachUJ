@@ -103,7 +103,7 @@ const ExerciseTableRow = ({
                                                             type="number"
                                                             placeholder={String(weight[setIndex])}
                                                             {...field}
-                                                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} // Convert to number
+                                                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                                             className="text-center w-24 h-7"
                                                         />
                                                         / {weight[setIndex]}
@@ -125,7 +125,7 @@ const ExerciseTableRow = ({
                                                             type="number"
                                                             placeholder={formatSecondsToMinutesAndSeconds(breakTime)}
                                                             {...field}
-                                                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} // Convert to number
+                                                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                                             className="text-center w-24 h-7"
                                                         />
                                                     </span>

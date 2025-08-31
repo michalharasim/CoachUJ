@@ -140,7 +140,7 @@ const WorkoutPlanForm = ({currentPlanId, onSubmit}: WorkoutPlanFormProps) => {
                                         variant="destructive"
                                         size="icon"
                                         onClick={() => remove(index)}
-                                        className="shrink-0" // Zapobiega rozciąganiu przycisku
+                                        className="shrink-0"
                                     >
                                         <MinusCircle className="h-4 w-4" />
                                     </Button>

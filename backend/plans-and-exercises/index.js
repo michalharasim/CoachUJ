@@ -12,7 +12,6 @@ const PlanExercise = require("./models/plan_exercise");
 const WorkoutLog = require("./models/workout_log");
 const Category = require("./models/category");
 const ExerciseCategory = require("./models/exercise_category");
-// const User = require("./models/user");
 const WorkoutLogExercise = require("./models/workout_log_exercise");
 
 PlanExercise.belongsTo(Exercise, {

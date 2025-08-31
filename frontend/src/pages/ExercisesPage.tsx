@@ -27,10 +27,10 @@ const ExercisesPage = () => {
 
     const handleSaveExercise = async (data: FormData) => {
         try {
-            if(selectedExerciseToEdit){  // update
+            if(selectedExerciseToEdit){
                 data.append('id', selectedExerciseToEdit.id.toString());
                 await plansExercisesApi.put("trainer/exercise", data);
-            }else { // create
+            }else {
                 await plansExercisesApi.post("trainer/exercise", data);
             }
             setIsFormModalOpen(false);

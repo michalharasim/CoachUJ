@@ -33,14 +33,14 @@ export function ThemeProvider({ children,  defaultTheme = "system",  storageKey 
                 ? "dark"
                 : "light";
 
-            root.classList.add(systemTheme); // Dodaj klasę "dark" lub "light" na podstawie preferencji systemu
+            root.classList.add(systemTheme);
         } else {
-            root.classList.add(theme); // Dodaj wybraną klasę "dark" lub "light"
+            root.classList.add(theme);
         }
-    }, [theme]); // Za każdym razem, gdy zmieni się motyw
+    }, [theme]);
 
     const setTheme = (theme: Theme) => {
-        localStorage.setItem(storageKey, theme); // Zapisz motyw w Local Storage
+        localStorage.setItem(storageKey, theme);
         setThemeState(theme);
     };
 

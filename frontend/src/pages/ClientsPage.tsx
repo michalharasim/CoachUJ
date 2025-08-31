@@ -13,13 +13,10 @@ const ClientsPage = () => {
             trainerClientApi.delete(`/connections/${id}`);
             refetch()
         } catch (error) {
-            // Check if the error is from Axios
             if (axios.isAxiosError(error)) {
-                // Access the server's response data
                 const responseData = error.response?.data;
                 let errorMessage = 'An unknown error occurred deleting the connection. Please try again later.';
 
-                // Check if the response data is an object with an 'error' property
                 if (responseData && typeof responseData === 'object' && 'error' in responseData) {
                     errorMessage = responseData.error;
                 }

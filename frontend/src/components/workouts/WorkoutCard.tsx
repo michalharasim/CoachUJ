@@ -26,10 +26,9 @@ const WorkoutCard = ({workoutUrl, workoutID, workoutAuthorId, workoutName, worko
         }
     };
 
-    // useEffect hook to fetch data when the component mounts
     useEffect(() => {
         fetchCoachProfileData();
-    }, []); // Empty dependency array ensures this runs only once
+    }, []);
 
     return (
         <Link to={workoutUrl}>

@@ -14,7 +14,7 @@ export type fetchedWorkoutPlanInfoClient = {
 }
 
 const WorkoutPage = () => {
-    const [view, setView] = useState('current'); // current or archived workouts
+    const [view, setView] = useState('current');
     const [plans, setPlans] = useState<fetchedWorkoutPlanInfoClient[]>([]);
     const { userData, isLoading } = useAuth();
 
@@ -39,13 +39,10 @@ const WorkoutPage = () => {
             }));
             setPlans(parsedPlans);
         } catch (error) {
-            // Check if the error is from Axios
             if (axios.isAxiosError(error)) {
-                // Access the server's response data
                 const responseData = error.response?.data;
                 let errorMessage = 'An unknown fetch client plans error occurred.';
 
-                // Check if the response data is an object with an 'error' property
                 if (responseData && typeof responseData === 'object' && 'error' in responseData) {
                     errorMessage = responseData.error;
                 }

@@ -29,7 +29,6 @@ const LoginPage = () : React.ReactElement => {
 
         try {
             const response = await authApi.post('/login', data);
-            // logowanie, zapis tokenu do localStorage
             const jsonResponse : { token: string } = await response.data;
             login(jsonResponse.token);
             setIsError(false);
@@ -38,7 +37,6 @@ const LoginPage = () : React.ReactElement => {
             navigate('/profile', { replace: true });
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                // czy odpowiedz serwera istnieje
                 const responseData = error.response?.data;
                 let errorMessage = 'Wystąpił nieznany błąd logowania.';
                 if (responseData && typeof responseData === 'object' && 'error' in responseData) {

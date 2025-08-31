@@ -20,7 +20,7 @@ const createProtectedApi = (baseURL: string): AxiosInstance => {
     );
 
     api.interceptors.response.use(
-        (response) => response, // jeśli ok, zwracamy response
+        (response) => response,
         (error) => {
             if (error.response?.status === 401) {
                 alert("Token wygasł, zaloguj sie ponownie")

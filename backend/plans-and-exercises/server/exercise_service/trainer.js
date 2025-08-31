@@ -77,13 +77,12 @@ const addExercise = async (req, res) => {
             coachID,
         });
 
-        // powiązane kategorie
         if (categories) {
             const categoryIds = Array.isArray(categories) ? categories : [categories];
 
             const exerciseCategories = categoryIds.map(id => ({
                 exerciseId: newExercise.id,
-                categoryId: Number(id), // konwertujemy na number
+                categoryId: Number(id),
             }));
 
             await ExerciseCategory.bulkCreate(exerciseCategories);
@@ -259,10 +258,8 @@ const updatePlan = async (req, res) => {
             };
 
             if (existingRecord) {
-                // Rekord istnieje, więc go aktualizujemy
                 await existingRecord.update(commonFields, { transaction: t });
             } else {
-                // Rekord nie istnieje, więc go tworzymy
                 await PlanExercise.create({
                     ...commonFields,
                     planID: planID,
@@ -316,7 +313,6 @@ const addPlanToClient = async (req, res) => {
             });
         }
 
-        // Stworzony rekord sesji treningowej (WorkoutLog)
         const newLog = await WorkoutLog.create({
             planID: planID,
             clientID: clientID,
@@ -369,8 +365,8 @@ const getExercises = async (req, res) => {
         const exercises = await Exercise.findAll({
             where: {
                 [Op.or]: [
-                    { coachID: null },       // globalne ćwiczenia
-                    { coachID: coachID }     // prywatne tego coacha
+                    { coachID: null },
+                    { coachID: coachID }
                 ]
             },
             include: [
@@ -404,7 +400,6 @@ const updateExercise = async (req, res) => {
     }
 
     const { id, name, description, categories } = req.body;
-    console.log(id, name, description, categories);
     if (!id) {
         return res.status(400).json({ error: "Exercise ID is required" });
     }
@@ -416,7 +411,6 @@ const updateExercise = async (req, res) => {
             return res.status(404).json({ error: "Exercise not found" });
         }
 
-        // Aktualizacja pól
         exercise.name = name ?? exercise.name;
         exercise.description = description ?? exercise.description;
 
@@ -426,7 +420,6 @@ const updateExercise = async (req, res) => {
 
         await exercise.save();
 
-        // Aktualizacja kategorii
         if (Array.isArray(categories)) {
             const exerciseId = id;
 
@@ -442,7 +435,6 @@ const updateExercise = async (req, res) => {
             await ExerciseCategory.bulkCreate(exerciseCategories);
         }
 
-        // Zwracamy zmapowane dane
         const updatedExercise = await Exercise.findOne({
             where: { id },
             include: [{ model: Category, attributes: ['id', 'name'], through: { attributes: [] } }]

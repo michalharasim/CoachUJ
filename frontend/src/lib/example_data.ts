@@ -130,15 +130,15 @@ export const sampleWorkoutPlans: WorkoutPlan[] = [
     {
         id: "wp1_logged",
         name: "Trening Siłowy A - Klatka i Triceps (WYKONANY)",
-        date: "2024-06-14", // Data w przeszłości
-        author: allCoaches[0], // Tomasz Wojciechowski
+        date: "2024-06-14",
+        author: allCoaches[0],
         note: "Rób to powoli",
         exercises: [
             {
                 exercise: sampleExercises.find(ex => ex.id === "ex1")!, // Wyciskanie sztangi
                 reps: ["5", "5", "5"],
                 weight: [80, 85, 90],
-                breakTime: 120, // sekundy
+                breakTime: 120,
             },
             {
                 exercise: {
@@ -174,8 +174,8 @@ export const sampleWorkoutPlans: WorkoutPlan[] = [
     {
         id: "wp2_todo",
         name: "Trening Siłowy B - Nogi i Barki (DO ZROBIENIA)",
-        date: "2025-09-17", // Data w przyszłości
-        author: allCoaches[1], // Anna Kowalczyk
+        date: "2025-09-17",
+        author: allCoaches[1],
         note: "",
         exercises: [
             {
