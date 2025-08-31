@@ -2,7 +2,8 @@ const { Sequelize } = require('sequelize');
 
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: './client-trainer.db'
+  storage: './client-trainer.db',
+  logging: false
 });
 
 sequelize.authenticate()
